@@ -1,0 +1,136 @@
+# psinco-card.b65 -- the opening card of every Psinco production (MEGA65, BASIC 65).
+# "a psinco. production" in lower case, black on white. The screen fades from black to white,
+# the letters fade in and out, only the dot of psinco. changes colour, and the screen fades
+# back to black. About 5 seconds; any key or fire button ends it early.
+# (C) 2026 Dawid Blachowski. MIT licence.
+#
+# Include it in a production's readable source (tools/bas65pp.py):
+#     #line 59000                  any free range of 57 lines (59000-59560 at step 10)
+#     #include psinco-card.b65
+# Use:
+#     GOSUB @pc_card               shows the card
+#     pc_ik                        0 it ran its course, 1 a key, 2 a fire button, 3 RETURN
+#     pc_key$                      the key that ended it, or ""
+#     GOSUB @pc_restore            in the program's TRAP handler and on its way out
+# On return the screen is cleared, in upper case and black: border and background colour 0.
+# Palette entries 11, 14 and 254 of the text bank and $D070 are back as found.
+# @pc_restore also puts back the border and background colours found before the card, and
+# does nothing if there is nothing to put back.
+# Works in 40 x 25, 80 x 25 and 80 x 50, centred; 5 seconds in PAL and in NTSC.
+# Every BASIC variable of the card begins with Z: the program around it must not use Z names.
+
+#var pc_ready ZY
+#var pc_saved ZS
+#var pc_d070 ZD
+#var pc_map ZM
+#var pc_bord ZB
+#var pc_scrn ZC
+#var pc_sv% ZV%
+#var pc_en% ZE%
+#var pc_ns% ZN%
+#var pc_hr% ZR%
+#var pc_hg% ZG%
+#var pc_hb% ZH%
+#var pc_fs ZF
+#var pc_fc Z0
+#var pc_last Z1
+#var pc_f Z2
+#var pc_t0 Z3
+#var pc_t ZT
+#var pc_bv ZW
+#var pc_a ZA
+#var pc_h Z4
+#var pc_hx Z5
+#var pc_hs Z6
+#var pc_hf Z7
+#var pc_pn ZP
+#var pc_pr Z8
+#var pc_pg Z9
+#var pc_pb ZJ
+#var pc_i ZI
+#var pc_k ZK
+#var pc_x ZX
+#var pc_y ZU
+#var pc_s$ ZZ$
+#var pc_key$ ZQ$
+#var pc_ik ZQ
+#var pc_jp ZO
+#var pc_jn ZL
+
+@pc_card
+  IF pc_ready=0 THEN GOSUB @pc_tables
+  GOSUB @pc_save: pc_fs=1: IF PEEK($FFD306F) AND 128 THEN pc_fs=5/6
+  PRINT CHR$(147);CHR$(14);: POKE $FFD3070,pc_map: pc_pr=0: pc_pg=0: pc_pb=0
+  FOR pc_i=0 TO 2: pc_pn=pc_en%(pc_i): GOSUB @pc_setcol: NEXT
+  POKE $FFD3020,254: POKE $FFD3021,254
+  # the text, centred; screen codes 1-26 are the lower-case letters after CHR$(14)
+  pc_x=INT((RWINDOW(2)-39)/2): pc_y=INT(RWINDOW(3)/2)
+  pc_s$="A   P S I N C O .   P R O D U C T I O N"
+  FOR pc_i=1 TO 39: pc_k=ASC(MID$(pc_s$,pc_i,1)): IF pc_k>63 THEN pc_k=pc_k-64
+  T@&(pc_x+pc_i-1,pc_y)=pc_k: C@&(pc_x+pc_i-1,pc_y)=14: NEXT
+  C@&(pc_x+INSTR(pc_s$,".")-1,pc_y)=11
+  # t counts 50ths of a second: 0-25 white fades in, 25-75 the letters fade in,
+  # 75-175 they hold, 175-225 they fade out, 225-250 the white fades out
+  GOSUB @pc_flush: pc_t0=pc_fc
+  DO: GOSUB @pc_tick: pc_t=INT((pc_fc-pc_t0)*pc_fs): pc_bv=255: pc_a=0
+  IF pc_t<25 THEN pc_bv=INT(255*pc_t/25)
+  IF pc_t>225 THEN pc_bv=INT(255*(250-pc_t)/25): IF pc_bv<0 THEN pc_bv=0
+  IF pc_t>=25 AND pc_t<75 THEN pc_a=(pc_t-25)/50
+  IF pc_t>=75 AND pc_t<175 THEN pc_a=1
+  IF pc_t>=175 AND pc_t<225 THEN pc_a=(225-pc_t)/50
+  pc_pn=254: pc_pr=pc_bv: pc_pg=pc_bv: pc_pb=pc_bv: GOSUB @pc_setcol
+  pc_pn=14: pc_pr=INT(pc_bv*(1-pc_a)): pc_pg=pc_pr: pc_pb=pc_pr: GOSUB @pc_setcol
+  pc_h=MOD(INT(pc_t/3),64): pc_pn=11: pc_pr=INT(pc_bv*(1-pc_a)+pc_hr%(pc_h)*pc_a)
+  pc_pg=INT(pc_bv*(1-pc_a)+pc_hg%(pc_h)*pc_a)
+  pc_pb=INT(pc_bv*(1-pc_a)+pc_hb%(pc_h)*pc_a): GOSUB @pc_setcol: GOSUB @pc_poll
+  LOOP UNTIL pc_t>=250 OR pc_ik
+  POKE $FFD3020,0: POKE $FFD3021,0: PRINT CHR$(147);CHR$(142);
+@pc_putback
+  POKE $FFD3070,pc_map: FOR pc_i=0 TO 2: pc_pn=pc_en%(pc_i)
+  POKE $FFD3100+pc_pn,pc_sv%(pc_i*3): POKE $FFD3200+pc_pn,pc_sv%(pc_i*3+1)
+  POKE $FFD3300+pc_pn,pc_sv%(pc_i*3+2): NEXT: POKE $FFD3070,pc_d070: RETURN
+@pc_restore
+  IF pc_saved=0 THEN RETURN
+  GOSUB @pc_putback: POKE $FFD3020,pc_bord: POKE $FFD3021,pc_scrn: pc_saved=0
+  RETURN
+@pc_save
+  pc_d070=PEEK($FFD3070): pc_map=(pc_d070 AND 63) OR ((pc_d070 AND 48)*4)
+  pc_bord=PEEK($FFD3020): pc_scrn=PEEK($FFD3021): POKE $FFD3070,pc_map
+  FOR pc_i=0 TO 2: pc_pn=pc_en%(pc_i): pc_sv%(pc_i*3)=PEEK($FFD3100+pc_pn)
+  pc_sv%(pc_i*3+1)=PEEK($FFD3200+pc_pn): pc_sv%(pc_i*3+2)=PEEK($FFD3300+pc_pn): NEXT
+  POKE $FFD3070,pc_d070: pc_saved=1: RETURN
+@pc_tick
+  pc_f=PEEK($FFD37FA): DO WHILE PEEK($FFD37FA)=pc_f: LOOP
+  pc_f=PEEK($FFD37FA): pc_fc=pc_fc+((pc_f-pc_last) AND 255): pc_last=pc_f: RETURN
+@pc_flush
+  DO: GET pc_key$: LOOP UNTIL pc_key$=""
+  pc_jp=JOY(3) AND 128: pc_ik=0: pc_last=PEEK($FFD37FA): RETURN
+@pc_poll
+  GET pc_key$: pc_ik=0: IF pc_key$<>"" THEN pc_ik=1: IF pc_key$=CHR$(13) THEN pc_ik=3
+  pc_jn=JOY(3) AND 128: IF pc_jn AND pc_jp=0 THEN pc_ik=2
+  pc_jp=pc_jn: RETURN
+@pc_setcol
+  # palette registers hold each channel with its nybbles swapped
+  POKE $FFD3100+pc_pn,pc_ns%(pc_pr): POKE $FFD3200+pc_pn,pc_ns%(pc_pg)
+  POKE $FFD3300+pc_pn,pc_ns%(pc_pb): RETURN
+@pc_tables
+  DIM pc_ns%(255),pc_hr%(63),pc_hg%(63),pc_hb%(63),pc_sv%(8),pc_en%(2)
+  pc_en%(0)=11: pc_en%(1)=14: pc_en%(2)=254
+  FOR pc_i=0 TO 255: pc_ns%(pc_i)=(pc_i AND 15)*16+INT(pc_i/16): NEXT
+  # 64 hues round the colour wheel for the dot
+  FOR pc_h=0 TO 63: pc_hx=pc_h*6/64: pc_hs=INT(pc_hx): pc_hf=pc_hx-pc_hs
+  ON pc_hs+1 GOSUB @pc_hue0,@pc_hue1,@pc_hue2,@pc_hue3,@pc_hue4,@pc_hue5
+  pc_hr%(pc_h)=INT(255*pc_pr): pc_hg%(pc_h)=INT(255*pc_pg)
+  pc_hb%(pc_h)=INT(255*pc_pb): NEXT: pc_ready=1: RETURN
+@pc_hue0
+  pc_pr=1: pc_pg=pc_hf: pc_pb=0: RETURN
+@pc_hue1
+  pc_pr=1-pc_hf: pc_pg=1: pc_pb=0: RETURN
+@pc_hue2
+  pc_pr=0: pc_pg=1: pc_pb=pc_hf: RETURN
+@pc_hue3
+  pc_pr=0: pc_pg=1-pc_hf: pc_pb=1: RETURN
+@pc_hue4
+  pc_pr=pc_hf: pc_pg=0: pc_pb=1: RETURN
+@pc_hue5
+  pc_pr=1: pc_pg=0: pc_pb=1-pc_hf: RETURN

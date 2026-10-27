@@ -1,0 +1,153 @@
+# daisy-bell.b65 -- DAISY BELL for the MEGA65 (BASIC 65 with a 6502 engine).
+# Part 1: the SIDs play the chorus of "Daisy Bell" (Harry Dacre, 1892) while its story is typed.
+# Part 2: the vocal tract model of Kelly and Lochbaum (1962), computed sample by sample and played by
+# the audio DMA, sings it, the SIDs accompanying; the lyrics appear as they are sung. The show belongs
+# to the engine: BASIC loads it and its two streams, prepares the screen, calls it once for the whole
+# show and then shows what it measured: "a machine that sings".
+# (C) 2026 Dawid Blachowski. MIT licence. A psinco. production.
+#
+# Memory: the engine DAISY-BELL.ENG at $52000-$54FFF (bank 5; its state at $55000-$553FF, the ring
+# of samples at $56000-$56FFF); the voice stream DAISY-BELL.VOX at $8000000 and the play stream
+# DAISY-BELL.EVT at $8010000 (attic RAM); the mailbox at $1E00-$1E31 (bank 0); the screen at $0800.
+# The mailbox, BASIC to the engine: $1E00 flags (bit 0: NTSC), $1E01 the voice's volume,
+# $1E02-$1E03 raster lines a frame, $1E04 the meter's factor, $1E05 the screen's page ($08).
+# The engine to BASIC: $1E10 how it ended (0 the end of the show, $51 Q, $FE the audio DMA stood
+# still), $1E11 samples played (4 bytes), $1E15 raster lines the voice took (4), $1E19 gaps in the
+# sound (2), $1E1B fewest samples waiting (2), $1E1D samples written (4), $1E21 the meter's highest;
+# $1E30-$1E31 the meter's two digits for the last second (the song does not show them).
+# The voice's volume is 204 of 255: 20 % below full, so that it sits with the SIDs.
+# Every BASIC variable beginning with Z belongs to the opening card.
+
+#include streams.b65
+#define VOICE_VOLUME 204
+
+#var w_found W0
+#var h_found H0
+#var border_found B0
+#var paper_found S0
+#var mode_set MF
+#var scr SA
+#var cram CO
+#var ntsc NT
+#var fps FP
+#var exit_code EX
+#var played TP
+#var spent SL
+#var gaps UG
+#var peak PK
+#var share PC
+#var lps LP
+#var need$ E$
+#var err_no E1
+#var err_line E2
+#var key$ K$
+#var key KC
+#var i I
+#var x X
+#var y Y
+#var a A
+#var s$ S$
+#var col CL
+#var upper UP
+#var len_s LS
+#var f F
+#var t T
+
+#line 10
+  REM DAISY BELL 1.0. A MEGA65 SINGS DAISY BELL (HARRY DACRE, 1892): THE KELLY-LOCHBAUM VOCAL TRACT (1962).
+  REM (C) 2026 DAWID BLACHOWSKI, WITH CLAUDE (ANTHROPIC'S AI). MIT LICENCE. A PSINCO. PRODUCTION. SEE CREDITS.
+  BANK 128: TRAP @trap: FAST: mode_set=0
+  w_found=RWINDOW(2): h_found=RWINDOW(3): border_found=PEEK($FFD3020): paper_found=PEEK($FFD3021)
+  mode_set=1: IF w_found<>40 OR h_found<>25 THEN PRINT CHR$(27);"4";
+  PRINT CHR$(142);CHR$(147);
+  GOSUB @pc_card: IF pc_key$="Q" OR pc_key$=CHR$(209) THEN GOTO @quit
+  IF RWINDOW(2)<>40 OR RWINDOW(3)<>25 THEN need$="ITS 40 X 25 TEXT SCREEN": GOTO @lack
+  POKE $FFD3020,0: POKE $FFD3021,0: CURSOR OFF: PRINT CHR$(14);CHR$(147);
+  # the engine writes the screen at $0800 itself: the screen must be there
+  scr=PEEK($FFD3060)+256*PEEK($FFD3061)+65536*PEEK($FFD3062)+16777216*(PEEK($FFD3063) AND 15)
+  cram=PEEK($FFD3064)+256*PEEK($FFD3065): T@&(39,24)=1: a=PEEK($BE7): T@&(39,24)=32
+  IF scr<>$800 OR a<>1 THEN need$="ITS 40 X 25 SCREEN AT $0800": GOTO @lack
+  ntsc=0: fps=50: IF PEEK($FFD306F) AND 128 THEN ntsc=1: fps=60
+  POKE $8000000,90: POKE $8000001,165
+  IF PEEK($8000000)<>90 OR PEEK($8000001)<>165 THEN need$="ITS ATTIC RAM (8 MB AT $8000000)": GOTO @lack
+  # the engine and the two streams; the engine's signature and the streams' last bytes checked
+  s$="LOADING": y=12: col=12: GOSUB @centre
+  BLOAD "DAISY-BELL.ENG",B0,P($52000): BLOAD "DAISY-BELL.VOX",B0,P($8000000)
+  BLOAD "DAISY-BELL.EVT",B0,P($8010000)
+  IF PEEK($52003)<>83 OR PEEK($52004)<>78 OR PEEK($52005)<>71 THEN need$="ITS FILE DAISY-BELL.ENG": GOTO @lack
+  IF PEEK($52006)<>ENGINE_VERSION THEN need$="ITS FILE DAISY-BELL.ENG": GOTO @lack
+  IF PEEK(VOX_LAST)<>255 OR PEEK(EVT_LAST)<>255 THEN need$="ITS FILES DAISY-BELL.VOX AND .EVT": GOTO @lack
+@show
+  # the show: white text on black, the meter's row grey; the four SIDs silent; the mailbox
+  PRINT CHR$(14);CHR$(147);: EDMA 3,1000,1,$FF80000+cram: EDMA 3,40,12,$FF80000+cram+920
+  FOR i=0 TO 127: POKE $FFD3400+i,0: NEXT
+  POKE $1E00,ntsc,VOICE_VOLUME,113-100*ntsc,2,210-2*ntsc,8: POKE $1E10,238
+  BANK 5: SYS $2000: BANK 128
+  exit_code=PEEK($1E10): IF exit_code=$51 THEN GOTO @quit
+  IF exit_code=$FE THEN GOTO @dma_still
+  IF exit_code<>0 THEN need$="ITS ENGINE TO END THE SHOW (IT ENDED WITH"+STR$(exit_code)+")": GOTO @lack
+  # what the engine measured: samples played, raster lines spent on the voice, gaps, the meter's highest
+  played=PEEK($1E11)+256*PEEK($1E12)+65536*PEEK($1E13)+16777216*PEEK($1E14)
+  spent=PEEK($1E15)+256*PEEK($1E16)+65536*PEEK($1E17)+16777216*PEEK($1E18)
+  gaps=PEEK($1E19)+256*PEEK($1E1A): peak=PEEK($1E21): lps=31250: IF ntsc THEN lps=27000000/858
+  share=INT(100*spent/lps/(played/SAMPLE_RATE)+.5)
+  # the last words stay two seconds; Q quits
+  DO: GET key$: LOOP UNTIL key$=""
+  FOR t=1 TO 2*fps: f=PEEK($FFD37FA): DO WHILE PEEK($FFD37FA)=f: LOOP
+  GET key$: IF key$="Q" OR key$=CHR$(209) THEN GOTO @quit
+  NEXT
+@card
+  PRINT CHR$(147);: EDMA 3,1000,15,$FF80000+cram
+  col=1: y=2: s$="^A ^MACHINE THAT ^SINGS": GOSUB @centre
+  col=15: x=2: y=5: s$="^DAISY ^BELL (^HARRY ^DACRE, 1892), SUNG": GOSUB @put
+  x=2: y=6: s$="BY THE VOCAL TRACT MODEL OF ^JOHN": GOSUB @put
+  x=2: y=7: s$="^KELLY AND ^CAROL ^LOCHBAUM (1962): A": GOSUB @put
+  x=2: y=8: s$="TUBE OF TEN SECTIONS, COMPUTED LIVE,": GOSUB @put
+  x=2: y=9: s$="10,000 SAMPLES A SECOND. ^THE ^S^I^DS": GOSUB @put
+  x=2: y=10: s$="PLAY THE ACCOMPANIMENT.": GOSUB @put
+  col=1: x=2: y=12: s$="^THE VOICE TOOK"+STR$(share)+"% OF THE ^C^P^U.": GOSUB @put
+  x=2: y=13: s$="("+MID$(STR$(peak),2)+"% IN ITS BUSIEST SECOND).": GOSUB @put
+  x=2: y=14: s$="^GAPS IN THE SOUND: NONE.": IF gaps THEN s$="^GAPS IN THE SOUND:"+STR$(gaps)+"."
+  GOSUB @put
+  col=12: y=17: s$="^BY ^DAWID ^BLACHOWSKI, WITH ^CLAUDE": GOSUB @centre
+  y=18: s$="(^ANTHROPIC'S ^A^I). ^A PSINCO. PRODUCTION.": GOSUB @centre
+  y=19: s$="^SOURCES: THE FILE ^C^R^E^D^I^T^S.": GOSUB @centre
+  col=1: y=22: s$="^R: SING AGAIN      ^Q: QUIT": GOSUB @centre
+  DO: GET key$: LOOP UNTIL key$=""
+  DO: GET key$: key=0: IF key$<>"" THEN key=ASC(key$): IF key>192 AND key<219 THEN key=key-128
+  LOOP UNTIL key=81 OR key=82 OR key=13
+  IF key=81 THEN GOTO @quit
+  GOTO @show
+@centre
+  # s$ centred on row y in colour col
+  len_s=LEN(s$): FOR i=1 TO LEN(s$): IF MID$(s$,i,1)="^" THEN len_s=len_s-1
+  NEXT: x=INT((40-len_s)/2)
+@put
+  # s$ from column x of row y in colour col: letters in lower case, a letter after ^ in upper case
+  upper=0: FOR i=1 TO LEN(s$): a=ASC(MID$(s$,i,1))
+  IF a=94 THEN upper=1: GOTO @put_next
+  IF a>64 AND a<91 AND upper=0 THEN a=a-64
+  T@&(x,y)=a: C@&(x,y)=col: x=x+1: upper=0
+@put_next
+  NEXT: RETURN
+@dma_still
+  GOSUB @cleanup: PRINT "THE AUDIO DMA DID NOT PLAY: ITS READ POSITION STOOD STILL."
+  PRINT "PLEASE REPORT THE CORE BUILD AND THE ROM.": END
+@quit
+  GOSUB @cleanup: PRINT "DAISY BELL ENDED.": END
+@cleanup
+  # sound off, the card's colours, border and background, case, cursor and screen mode back
+  TRAP: FOR i=0 TO 127: POKE $FFD3400+i,0: NEXT: GOSUB @pc_restore
+  POKE $FFD3020,border_found: POKE $FFD3021,paper_found: CURSOR ON: PRINT CHR$(142);
+  IF mode_set=0 THEN RETURN
+  IF w_found=80 AND h_found=25 THEN PRINT CHR$(27);"8";
+  IF w_found=80 AND h_found=50 THEN PRINT CHR$(27);"5";
+  PRINT CHR$(147);: RETURN
+@trap
+  err_no=ER: err_line=EL: GOSUB @cleanup: IF err_no=30 THEN PRINT "DAISY BELL STOPPED.": END
+  PRINT "DAISY BELL STOPPED: ";ERR$(err_no);" IN LINE";err_line: END
+@lack
+  GOSUB @cleanup: PRINT "DAISY BELL NEEDS ";need$;".": END
+
+#line 59000
+#include psinco-card.b65

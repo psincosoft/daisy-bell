@@ -1,0 +1,11 @@
+Daisy Bell 1.0, 2026. A machine that sings: the vocal tract model of John L. Kelly Jr. and Carol Lochbaum (1962) sings Daisy Bell on the MEGA65. The voice is computed live, sample by sample, and played by the audio DMA; the SIDs play the tune alone in the first part and accompany the voice in the second.
+
+By Dawid Blachowski, with Claude (Anthropic's AI). A psinco. production. Psinco: a software atelier from Luxembourg. (C) 2026 Dawid Blachowski. MIT licence: free to use, change and share, with the notice; see the file LICENSE.
+
+The song: Daisy Bell, words and music by Harry Dacre, 1892, in the public domain. The melody and the words of the chorus follow the edition of T. B. Harms & Co., New York, 1892, in the Digital Collections of the University of Wisconsin-Madison Libraries. The accompaniment is our own.
+
+The voice: a tube of ten sections after J. L. Kelly Jr. and C. C. Lochbaum, Speech synthesis, Proceedings of the Fourth International Congress on Acoustics, Copenhagen, 1962, paper G42. The shapes of the vowels are fitted to the formant frequencies of men's vowels measured by G. E. Peterson and H. L. Barney, Control methods used in a study of the vowels, Journal of the Acoustical Society of America 24 (1952), 175-184. The glottal pulse has the shape of A. E. Rosenberg, Effect of glottal pulse shape on the quality of natural vowels, Journal of the Acoustical Society of America 49 (1971), 583-590. The other shapes, the consonants and the singing are our own estimates.
+
+In 1961 an IBM mainframe at Bell Telephone Laboratories sang Daisy Bell. John L. Kelly Jr. and Carol Lochbaum programmed the voice and Max Mathews the accompaniment. Nothing of that recording is used here.
+
+The story told on the screen rests on: the Library of Congress essay on the 1961 recording for the National Recording Registry (Cary O'Dell), which also calls it the first time an artificial device sang; Guinness World Records, First song performed using computer speech synthesis; Wikipedia, Daisy Bell, IBM 7090 and John Larry Kelly Jr. The sources name the IBM 704 and the IBM 7090 for 1961, so the screen says an IBM mainframe.

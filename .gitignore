@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+build/*.log
+build/*.png
+build/*.wav
+build/*.mp4
+build/*.map
+build/*.sym
+build/*.D81
+build/show.json
+build/screen_log.json

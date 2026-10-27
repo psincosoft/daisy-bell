@@ -1,0 +1,2113 @@
+2000  4C 07 20                  JMP START
+2003  53 4E 47 01               .byte $53, $4E, $47, 1
+2007  78                        SEI
+2008  D8                        CLD
+2009  A2 00                     LDX #0
+200B  8A                        TXA
+200C  9D 00 52                  STA $5200,X
+200F  E8                        INX
+2010  D0 FA                     BNE ST_CLR
+2012  A9 01                     LDA #1
+2014  8D A0 52                  STA XL
+2017  A9 FF                     LDA #255
+2019  8D CF 52                  STA MINBUF
+201C  8D D0 52                  STA MINBUF+1
+201F  AD 11 D7                  LDA AUDCTL
+2022  8D E2 52                  STA SAV711
+2025  AD 1C D7                  LDA CH0RVOL
+2028  8D EB 52                  STA SAVPAN
+202B  AD 4E D0                  LDA TEXTYL
+202E  8D E0 52                  STA TYB
+2031  AD 4F D0                  LDA TEXTYH
+2034  29 0F                     AND #$0F
+2036  8D E1 52                  STA TYB+1
+2039  AD 4F D0                  LDA TEXTYH
+203C  29 F0                     AND #$F0
+203E  8D E3 52                  STA SAVTYH
+2041  AD 00 1E                  LDA MB_FLAGS
+2044  29 01                     AND #1
+2046  8D E4 52                  STA NTSC
+2049  AD 01 1E                  LDA MB_VOL
+204C  8D E9 52                  STA VOL
+204F  AD 02 1E                  LDA MB_LINESL
+2052  8D E5 52                  STA LINES
+2055  AD 03 1E                  LDA MB_LINESH
+2058  8D E6 52                  STA LINES+1
+205B  AD 04 1E                  LDA MB_METERK
+205E  8D E7 52                  STA METERK
+2061  AD 05 1E                  LDA MB_SCRHI
+2064  8D EA 52                  STA SCRHI
+2067  AD E4 52                  LDA NTSC
+206A  F0 0D                     BEQ ST_PAL
+206C  A9 4F                     LDA #>SFNL
+206E  8D 4D 26                  STA EVF1+2
+2071  A9 4F                     LDA #>SFNH
+2073  8D 53 26                  STA EVF2+2
+2076  4C 83 20                  JMP ST_TAB
+2079  A9 4E                     LDA #>SFPL
+207B  8D 4D 26                  STA EVF1+2
+207E  A9 4E                     LDA #>SFPH
+2080  8D 53 26                  STA EVF2+2
+2083  A9 00                     LDA #0
+2085  8D 20 D7                  STA CH0CTL
+2088  A2 00                     LDX #0
+208A  8A                        TXA
+208B  9D 00 60                  STA RING,X
+208E  9D 00 61                  STA RING+$100,X
+2091  9D 00 62                  STA RING+$200,X
+2094  9D 00 63                  STA RING+$300,X
+2097  9D 00 64                  STA RING+$400,X
+209A  9D 00 65                  STA RING+$500,X
+209D  9D 00 66                  STA RING+$600,X
+20A0  9D 00 67                  STA RING+$700,X
+20A3  9D 00 68                  STA RING+$800,X
+20A6  9D 00 69                  STA RING+$900,X
+20A9  9D 00 6A                  STA RING+$A00,X
+20AC  9D 00 6B                  STA RING+$B00,X
+20AF  9D 00 6C                  STA RING+$C00,X
+20B2  9D 00 6D                  STA RING+$D00,X
+20B5  9D 00 6E                  STA RING+$E00,X
+20B8  9D 00 6F                  STA RING+$F00,X
+20BB  E8                        INX
+20BC  D0 CD                     BNE ST_RCL
+20BE  A9 00                     LDA #<RING
+20C0  8D 92 32                  STA WP1+1
+20C3  A9 01                     LDA #<(RING+1)
+20C5  8D 98 32                  STA WP2+1
+20C8  A9 60                     LDA #>RING
+20CA  8D 93 32                  STA WP1+2
+20CD  8D 99 32                  STA WP2+2
+20D0  A9 00                     LDA #0
+20D2  8D 76 D7                  STA $D776
+20D5  8D 77 D7                  STA $D777
+20D8  AD 10 D6                  LDA KEYQ
+20DB  F0 06                     BEQ ST_KEY2
+20DD  8D 10 D6                  STA KEYQ
+20E0  4C D8 20                  JMP ST_KEY
+20E3  A9 00                     LDA #<0
+20E5  8D D9 52                  STA VSRC
+20E8  A9 00                     LDA #>0
+20EA  8D DA 52                  STA VSRC+1
+20ED  A9 00                     LDA #0
+20EF  8D DB 52                  STA VSRC+2
+20F2  A9 00                     LDA #<0
+20F4  8D DC 52                  STA ESRC
+20F7  A9 00                     LDA #>0
+20F9  8D DD 52                  STA ESRC+1
+20FC  A9 01                     LDA #1
+20FE  8D DE 52                  STA ESRC+2
+2101  A9 00                     LDA #0
+2103  20 D4 24                  JSR VFILL
+2106  A9 80                     LDA #$80
+2108  20 D4 24                  JSR VFILL
+210B  A9 00                     LDA #0
+210D  20 0D 25                  JSR EFILL
+2110  A9 80                     LDA #$80
+2112  20 0D 25                  JSR EFILL
+2115  A9 00                     LDA #0
+2117  8D D7 52                  STA VIDX
+211A  8D D8 52                  STA EIDX
+211D  20 BA 24                  JSR EGET
+2120  8D BA 52                  STA ETIME
+2123  20 BA 24                  JSR EGET
+2126  8D BB 52                  STA ETIME+1
+2129  20 4D 27                  JSR FRAME
+212C  20 5F 2D                  JSR BLOCK
+212F  20 11 23                  JSR ADDW
+2132  AD B1 52                  LDA TWRITE+1
+2135  C9 07                     CMP #>1948
+2137  90 F0                     BCC ST_PRE
+2139  D0 07                     BNE ST_GO
+213B  AD B0 52                  LDA TWRITE
+213E  C9 9C                     CMP #<1948
+2140  90 E7                     BCC ST_PRE
+2142  A9 00                     LDA #$00
+2144  8D 21 D7                  STA CH0BADR
+2147  A9 60                     LDA #>RING
+2149  8D 22 D7                  STA CH0BADR+1
+214C  A9 05                     LDA #$05
+214E  8D 23 D7                  STA CH0BADR+2
+2151  A9 2E                     LDA #<4142
+2153  8D 24 D7                  STA CH0FREQ
+2156  A9 10                     LDA #>4142
+2158  8D 25 D7                  STA CH0FREQ+1
+215B  A9 00                     LDA #0
+215D  8D 26 D7                  STA CH0FREQ+2
+2160  A9 00                     LDA #$00
+2162  8D 27 D7                  STA CH0TADR
+2165  A9 70                     LDA #>(RING+$1000)
+2167  8D 28 D7                  STA CH0TADR+1
+216A  AD E9 52                  LDA VOL
+216D  8D 29 D7                  STA CH0VOL
+2170  8D 1C D7                  STA CH0RVOL
+2173  A9 00                     LDA #$00
+2175  8D 2A D7                  STA CH0CUR
+2178  A9 60                     LDA #>RING
+217A  8D 2B D7                  STA CH0CUR+1
+217D  A9 05                     LDA #$05
+217F  8D 2C D7                  STA CH0CUR+2
+2182  A9 00                     LDA #0
+2184  8D 2D D7                  STA $D72D
+2187  8D 2E D7                  STA $D72E
+218A  8D 2F D7                  STA $D72F
+218D  AD E2 52                  LDA SAV711
+2190  29 08                     AND #$08
+2192  09 80                     ORA #$80
+2194  8D 11 D7                  STA AUDCTL
+2197  A9 C3                     LDA #$C3
+2199  8D 20 D7                  STA CH0CTL
+219C  AD FA D7                  LDA FRAMES
+219F  8D D5 52                  STA LASTF
+21A2  20 4C 23                  JSR PLAYPOS
+21A5  AD D2 52                  LDA EXITC
+21A8  F0 03                     BEQ MN_A
+21AA  4C AA 22                  JMP FINISH
+21AD  20 92 25                  JSR EVENTS
+21B0  AD D1 52                  LDA DONE
+21B3  F0 03                     BEQ MN_B
+21B5  4C AA 22                  JMP FINISH
+21B8  20 EF 23                  JSR KEYS
+21BB  AD D2 52                  LDA EXITC
+21BE  F0 03                     BEQ MN_C
+21C0  4C AA 22                  JMP FINISH
+21C3  20 05 24                  JSR METERUP
+21C6  38                        SEC
+21C7  AD B0 52                  LDA TWRITE
+21CA  ED B4 52                  SBC TPLAY
+21CD  8D F0 52                  STA T0
+21D0  AD B1 52                  LDA TWRITE+1
+21D3  ED B5 52                  SBC TPLAY+1
+21D6  8D F1 52                  STA T1
+21D9  AD B2 52                  LDA TWRITE+2
+21DC  ED B6 52                  SBC TPLAY+2
+21DF  AD B3 52                  LDA TWRITE+3
+21E2  ED B7 52                  SBC TPLAY+3
+21E5  B0 14                     BCS MN_OK
+21E7  EE CD 52                  INC UNDER
+21EA  D0 03                     BNE MN_UR
+21EC  EE CE 52                  INC UNDER+1
+21EF  20 4D 27                  JSR FRAME
+21F2  20 5F 2D                  JSR BLOCK
+21F5  20 11 23                  JSR ADDW
+21F8  4C A2 21                  JMP MAIN
+21FB  AD F1 52                  LDA T1
+21FE  CD D0 52                  CMP MINBUF+1
+2201  90 0A                     BCC MN_MIN
+2203  D0 14                     BNE MN_ROOM
+2205  AD F0 52                  LDA T0
+2208  CD CF 52                  CMP MINBUF
+220B  B0 0C                     BCS MN_ROOM
+220D  AD F0 52                  LDA T0
+2210  8D CF 52                  STA MINBUF
+2213  AD F1 52                  LDA T1
+2216  8D D0 52                  STA MINBUF+1
+2219  AD F1 52                  LDA T1
+221C  C9 07                     CMP #>1982
+221E  90 0E                     BCC MN_BLK
+2220  D0 09                     BNE IDLE
+2222  AD F0 52                  LDA T0
+2225  C9 BE                     CMP #<1982
+2227  90 05                     BCC MN_BLK
+2229  F0 03                     BEQ MN_BLK
+222B  4C A2 21                  JMP MAIN
+222E  20 2A 23                  JSR RASTER
+2231  AD EC 52                  LDA RASL
+2234  8D D3 52                  STA RAS0
+2237  AD ED 52                  LDA RASH
+223A  8D D4 52                  STA RAS0+1
+223D  20 4D 27                  JSR FRAME
+2240  20 5F 2D                  JSR BLOCK
+2243  20 2A 23                  JSR RASTER
+2246  38                        SEC
+2247  AD EC 52                  LDA RASL
+224A  ED D3 52                  SBC RAS0
+224D  8D F0 52                  STA T0
+2250  AD ED 52                  LDA RASH
+2253  ED D4 52                  SBC RAS0+1
+2256  8D F1 52                  STA T1
+2259  B0 13                     BCS MN_R1
+225B  18                        CLC
+225C  AD F0 52                  LDA T0
+225F  6D E5 52                  ADC LINES
+2262  8D F0 52                  STA T0
+2265  AD F1 52                  LDA T1
+2268  6D E6 52                  ADC LINES+1
+226B  8D F1 52                  STA T1
+226E  18                        CLC
+226F  AD C0 52                  LDA SLINES
+2272  6D F0 52                  ADC T0
+2275  8D C0 52                  STA SLINES
+2278  AD C1 52                  LDA SLINES+1
+227B  6D F1 52                  ADC T1
+227E  8D C1 52                  STA SLINES+1
+2281  AD C2 52                  LDA SLINES+2
+2284  69 00                     ADC #0
+2286  8D C2 52                  STA SLINES+2
+2289  AD C3 52                  LDA SLINES+3
+228C  69 00                     ADC #0
+228E  8D C3 52                  STA SLINES+3
+2291  18                        CLC
+2292  AD C4 52                  LDA SLWIN
+2295  6D F0 52                  ADC T0
+2298  8D C4 52                  STA SLWIN
+229B  AD C5 52                  LDA SLWIN+1
+229E  6D F1 52                  ADC T1
+22A1  8D C5 52                  STA SLWIN+1
+22A4  20 11 23                  JSR ADDW
+22A7  4C A2 21                  JMP MAIN
+22AA  A9 00                     LDA #0
+22AC  8D 20 D7                  STA CH0CTL
+22AF  A2 7F                     LDX #$7F
+22B1  9D 00 D4                  STA SIDBASE,X
+22B4  CA                        DEX
+22B5  10 FA                     BPL FN_SID
+22B7  AD E2 52                  LDA SAV711
+22BA  29 BF                     AND #$BF
+22BC  8D 11 D7                  STA AUDCTL
+22BF  AD EB 52                  LDA SAVPAN
+22C2  8D 1C D7                  STA CH0RVOL
+22C5  AD E0 52                  LDA TYB
+22C8  8D 4E D0                  STA TEXTYL
+22CB  AD E1 52                  LDA TYB+1
+22CE  0D E3 52                  ORA SAVTYH
+22D1  8D 4F D0                  STA TEXTYH
+22D4  AD D2 52                  LDA EXITC
+22D7  8D 10 1E                  STA MB_EXIT
+22DA  A2 03                     LDX #3
+22DC  BD B4 52                  LDA TPLAY,X
+22DF  9D 11 1E                  STA MB_TPLAY,X
+22E2  BD C0 52                  LDA SLINES,X
+22E5  9D 15 1E                  STA MB_SLINES,X
+22E8  BD B0 52                  LDA TWRITE,X
+22EB  9D 1D 1E                  STA MB_TWRITE,X
+22EE  CA                        DEX
+22EF  10 EB                     BPL FN_CP
+22F1  AD CD 52                  LDA UNDER
+22F4  8D 19 1E                  STA MB_UNDER
+22F7  AD CE 52                  LDA UNDER+1
+22FA  8D 1A 1E                  STA MB_UNDER+1
+22FD  AD CF 52                  LDA MINBUF
+2300  8D 1B 1E                  STA MB_MINBUF
+2303  AD D0 52                  LDA MINBUF+1
+2306  8D 1C 1E                  STA MB_MINBUF+1
+2309  AD EE 52                  LDA PEAK
+230C  8D 21 1E                  STA MB_PEAK
+230F  58                        CLI
+2310  60                        RTS
+2311  18                        CLC
+2312  AD B0 52                  LDA TWRITE
+2315  69 32                     ADC #50
+2317  8D B0 52                  STA TWRITE
+231A  90 0D                     BCC AW1
+231C  EE B1 52                  INC TWRITE+1
+231F  D0 08                     BNE AW1
+2321  EE B2 52                  INC TWRITE+2
+2324  D0 03                     BNE AW1
+2326  EE B3 52                  INC TWRITE+3
+2329  60                        RTS
+232A  AD 53 D0                  LDA RASTH
+232D  29 07                     AND #$07
+232F  8D ED 52                  STA RASH
+2332  AD 52 D0                  LDA RASTL
+2335  8D EC 52                  STA RASL
+2338  AD 53 D0                  LDA RASTH
+233B  29 07                     AND #$07
+233D  CD ED 52                  CMP RASH
+2340  F0 09                     BEQ RA1
+2342  8D ED 52                  STA RASH
+2345  AD 52 D0                  LDA RASTL
+2348  8D EC 52                  STA RASL
+234B  60                        RTS
+234C  AD 2B D7                  LDA CH0CUR+1
+234F  8D F1 52                  STA T1
+2352  AD 2A D7                  LDA CH0CUR
+2355  8D F0 52                  STA T0
+2358  AD 2B D7                  LDA CH0CUR+1
+235B  CD F1 52                  CMP T1
+235E  F0 09                     BEQ PP1
+2360  8D F1 52                  STA T1
+2363  AD 2A D7                  LDA CH0CUR
+2366  8D F0 52                  STA T0
+2369  AD F1 52                  LDA T1
+236C  38                        SEC
+236D  E9 60                     SBC #>RING
+236F  29 0F                     AND #$0F
+2371  4A                        LSR A
+2372  8D F1 52                  STA T1
+2375  AD F0 52                  LDA T0
+2378  6A                        ROR A
+2379  8D F0 52                  STA T0
+237C  38                        SEC
+237D  AD F0 52                  LDA T0
+2380  ED B8 52                  SBC LASTIDX
+2383  8D F4 52                  STA D0
+2386  AD F1 52                  LDA T1
+2389  ED B9 52                  SBC LASTIDX+1
+238C  29 07                     AND #$07
+238E  8D F5 52                  STA D1
+2391  AD F0 52                  LDA T0
+2394  8D B8 52                  STA LASTIDX
+2397  AD F1 52                  LDA T1
+239A  8D B9 52                  STA LASTIDX+1
+239D  AD F4 52                  LDA D0
+23A0  0D F5 52                  ORA D1
+23A3  F0 2F                     BEQ PP_STILL
+23A5  18                        CLC
+23A6  AD B4 52                  LDA TPLAY
+23A9  6D F4 52                  ADC D0
+23AC  8D B4 52                  STA TPLAY
+23AF  AD B5 52                  LDA TPLAY+1
+23B2  6D F5 52                  ADC D1
+23B5  8D B5 52                  STA TPLAY+1
+23B8  AD B6 52                  LDA TPLAY+2
+23BB  69 00                     ADC #0
+23BD  8D B6 52                  STA TPLAY+2
+23C0  AD B7 52                  LDA TPLAY+3
+23C3  69 00                     ADC #0
+23C5  8D B7 52                  STA TPLAY+3
+23C8  A9 00                     LDA #0
+23CA  8D D6 52                  STA STALL
+23CD  AD FA D7                  LDA FRAMES
+23D0  8D D5 52                  STA LASTF
+23D3  60                        RTS
+23D4  AD FA D7                  LDA FRAMES
+23D7  CD D5 52                  CMP LASTF
+23DA  F0 12                     BEQ PP2
+23DC  8D D5 52                  STA LASTF
+23DF  EE D6 52                  INC STALL
+23E2  AD D6 52                  LDA STALL
+23E5  C9 32                     CMP #50
+23E7  90 05                     BCC PP2
+23E9  A9 FE                     LDA #$FE
+23EB  8D D2 52                  STA EXITC
+23EE  60                        RTS
+23EF  AD 10 D6                  LDA KEYQ
+23F2  F0 10                     BEQ KY0
+23F4  8D 10 D6                  STA KEYQ
+23F7  C9 51                     CMP #$51
+23F9  F0 04                     BEQ KYQ
+23FB  C9 71                     CMP #$71
+23FD  D0 05                     BNE KY0
+23FF  A9 51                     LDA #$51
+2401  8D D2 52                  STA EXITC
+2404  60                        RTS
+2405  AD C6 52                  LDA METER
+2408  D0 01                     BNE MU_GO
+240A  60                        RTS
+240B  38                        SEC
+240C  AD B4 52                  LDA TPLAY
+240F  ED C9 52                  SBC NEXTM
+2412  AD B5 52                  LDA TPLAY+1
+2415  ED CA 52                  SBC NEXTM+1
+2418  AD B6 52                  LDA TPLAY+2
+241B  ED CB 52                  SBC NEXTM+2
+241E  AD B7 52                  LDA TPLAY+3
+2421  ED CC 52                  SBC NEXTM+3
+2424  B0 01                     BCS MU_T
+2426  60                        RTS
+2427  AD C4 52                  LDA SLWIN
+242A  8D 70 D7                  STA MULA0
+242D  AD C5 52                  LDA SLWIN+1
+2430  8D 71 D7                  STA MULA1
+2433  A9 00                     LDA #0
+2435  8D 72 D7                  STA MULA2
+2438  8D 73 D7                  STA MULA3
+243B  AD E7 52                  LDA METERK
+243E  8D 74 D7                  STA MULB0
+2441  A9 00                     LDA #0
+2443  8D 75 D7                  STA MULB1
+2446  AD 7B D7                  LDA MULO3
+2449  D0 07                     BNE MU99
+244B  AD 7A D7                  LDA MULO2
+244E  C9 64                     CMP #100
+2450  90 02                     BCC MU1
+2452  A9 63                     LDA #99
+2454  CD EE 52                  CMP PEAK
+2457  90 03                     BCC MU2
+2459  8D EE 52                  STA PEAK
+245C  A2 30                     LDX #$30
+245E  C9 0A                     CMP #10
+2460  90 06                     BCC MU4
+2462  E9 0A                     SBC #10
+2464  E8                        INX
+2465  4C 5E 24                  JMP MU3
+2468  09 30                     ORA #$30
+246A  8D 72 24                  STA MUW2+1
+246D  8A                        TXA
+246E  8D 00 08                  STA $0800
+2471  A9 00                     LDA #0
+2473  8D 01 08                  STA $0801
+2476  A9 00                     LDA #0
+2478  8D C4 52                  STA SLWIN
+247B  8D C5 52                  STA SLWIN+1
+247E  18                        CLC
+247F  AD C9 52                  LDA NEXTM
+2482  69 10                     ADC #<10000
+2484  8D C9 52                  STA NEXTM
+2487  AD CA 52                  LDA NEXTM+1
+248A  69 27                     ADC #>10000
+248C  8D CA 52                  STA NEXTM+1
+248F  AD CB 52                  LDA NEXTM+2
+2492  69 00                     ADC #0
+2494  8D CB 52                  STA NEXTM+2
+2497  AD CC 52                  LDA NEXTM+3
+249A  69 00                     ADC #0
+249C  8D CC 52                  STA NEXTM+3
+249F  60                        RTS
+24A0  AE D7 52                  LDX VIDX
+24A3  BD 00 50                  LDA VFIFO,X
+24A6  E8                        INX
+24A7  8E D7 52                  STX VIDX
+24AA  48                        PHA
+24AB  8A                        TXA
+24AC  29 7F                     AND #$7F
+24AE  D0 08                     BNE VG1
+24B0  08                        PHP
+24B1  8A                        TXA
+24B2  49 80                     EOR #$80
+24B4  20 D4 24                  JSR VFILL
+24B7  28                        PLP
+24B8  68                        PLA
+24B9  60                        RTS
+24BA  AE D8 52                  LDX EIDX
+24BD  BD 00 51                  LDA EFIFO,X
+24C0  E8                        INX
+24C1  8E D8 52                  STX EIDX
+24C4  48                        PHA
+24C5  8A                        TXA
+24C6  29 7F                     AND #$7F
+24C8  D0 08                     BNE EG1
+24CA  08                        PHP
+24CB  8A                        TXA
+24CC  49 80                     EOR #$80
+24CE  20 0D 25                  JSR EFILL
+24D1  28                        PLP
+24D2  68                        PLA
+24D3  60                        RTS
+24D4  8D 0C 53                  STA DMALIST+12
+24D7  A9 50                     LDA #>VFIFO
+24D9  8D 0D 53                  STA DMALIST+13
+24DC  AD D9 52                  LDA VSRC
+24DF  8D 09 53                  STA DMALIST+9
+24E2  AD DA 52                  LDA VSRC+1
+24E5  8D 0A 53                  STA DMALIST+10
+24E8  AD DB 52                  LDA VSRC+2
+24EB  8D 0B 53                  STA DMALIST+11
+24EE  20 46 25                  JSR DODMA
+24F1  18                        CLC
+24F2  AD D9 52                  LDA VSRC
+24F5  69 80                     ADC #$80
+24F7  8D D9 52                  STA VSRC
+24FA  AD DA 52                  LDA VSRC+1
+24FD  69 00                     ADC #0
+24FF  8D DA 52                  STA VSRC+1
+2502  AD DB 52                  LDA VSRC+2
+2505  69 00                     ADC #0
+2507  29 0F                     AND #$0F
+2509  8D DB 52                  STA VSRC+2
+250C  60                        RTS
+250D  8D 0C 53                  STA DMALIST+12
+2510  A9 51                     LDA #>EFIFO
+2512  8D 0D 53                  STA DMALIST+13
+2515  AD DC 52                  LDA ESRC
+2518  8D 09 53                  STA DMALIST+9
+251B  AD DD 52                  LDA ESRC+1
+251E  8D 0A 53                  STA DMALIST+10
+2521  AD DE 52                  LDA ESRC+2
+2524  8D 0B 53                  STA DMALIST+11
+2527  20 46 25                  JSR DODMA
+252A  18                        CLC
+252B  AD DC 52                  LDA ESRC
+252E  69 80                     ADC #$80
+2530  8D DC 52                  STA ESRC
+2533  AD DD 52                  LDA ESRC+1
+2536  69 00                     ADC #0
+2538  8D DD 52                  STA ESRC+1
+253B  AD DE 52                  LDA ESRC+2
+253E  69 00                     ADC #0
+2540  29 0F                     AND #$0F
+2542  8D DE 52                  STA ESRC+2
+2545  60                        RTS
+2546  A9 0B                     LDA #$0B
+2548  8D 00 53                  STA DMALIST
+254B  A9 80                     LDA #$80
+254D  8D 01 53                  STA DMALIST+1
+2550  8D 02 53                  STA DMALIST+2
+2553  A9 81                     LDA #$81
+2555  8D 03 53                  STA DMALIST+3
+2558  A9 00                     LDA #$00
+255A  8D 04 53                  STA DMALIST+4
+255D  8D 05 53                  STA DMALIST+5
+2560  8D 06 53                  STA DMALIST+6
+2563  A9 80                     LDA #$80
+2565  8D 07 53                  STA DMALIST+7
+2568  A9 00                     LDA #0
+256A  8D 08 53                  STA DMALIST+8
+256D  A9 05                     LDA #$05
+256F  8D 0E 53                  STA DMALIST+14
+2572  A9 00                     LDA #0
+2574  8D 0F 53                  STA DMALIST+15
+2577  8D 10 53                  STA DMALIST+16
+257A  8D 11 53                  STA DMALIST+17
+257D  A9 05                     LDA #$05
+257F  8D 02 D7                  STA DMABANK
+2582  A9 53                     LDA #>DMALIST
+2584  8D 01 D7                  STA DMAMSB
+2587  A9 00                     LDA #0
+2589  8D 04 D7                  STA DMAMB
+258C  A9 00                     LDA #<DMALIST
+258E  8D 05 D7                  STA DMAETRIG
+2591  60                        RTS
+2592  AD D1 52                  LDA DONE
+2595  D0 59                     BNE EVX
+2597  38                        SEC
+2598  AD B4 52                  LDA TPLAY
+259B  ED BA 52                  SBC ETIME
+259E  AD B5 52                  LDA TPLAY+1
+25A1  ED BB 52                  SBC ETIME+1
+25A4  AD B6 52                  LDA TPLAY+2
+25A7  ED BC 52                  SBC ETIME+2
+25AA  AD B7 52                  LDA TPLAY+3
+25AD  ED BD 52                  SBC ETIME+3
+25B0  90 3E                     BCC EVX
+25B2  20 BA 24                  JSR EGET
+25B5  F0 3A                     BEQ EVNEXT
+25B7  C9 01                     CMP #$01
+25B9  F0 5C                     BEQ EVPOKE
+25BB  C9 02                     CMP #$02
+25BD  F0 6D                     BEQ EVSID
+25BF  C9 03                     CMP #$03
+25C1  F0 7B                     BEQ EVSIDF
+25C3  C9 04                     CMP #$04
+25C5  D0 03                     BNE EVC5
+25C7  4C 5A 26                  JMP EVTXT
+25CA  C9 05                     CMP #$05
+25CC  D0 03                     BNE EVC6
+25CE  4C 95 26                  JMP EVTYP
+25D1  C9 06                     CMP #$06
+25D3  D0 03                     BNE EVC7
+25D5  4C B0 26                  JMP EVFILL
+25D8  C9 07                     CMP #$07
+25DA  D0 03                     BNE EVC8
+25DC  4C F9 26                  JMP EVMON
+25DF  C9 08                     CMP #$08
+25E1  D0 08                     BNE EVC9
+25E3  A9 00                     LDA #0
+25E5  8D C6 52                  STA METER
+25E8  4C B2 25                  JMP EVCMD
+25EB  A9 01                     LDA #1
+25ED  8D D1 52                  STA DONE
+25F0  60                        RTS
+25F1  20 BA 24                  JSR EGET
+25F4  18                        CLC
+25F5  6D BA 52                  ADC ETIME
+25F8  8D BA 52                  STA ETIME
+25FB  20 BA 24                  JSR EGET
+25FE  6D BB 52                  ADC ETIME+1
+2601  8D BB 52                  STA ETIME+1
+2604  AD BC 52                  LDA ETIME+2
+2607  69 00                     ADC #0
+2609  8D BC 52                  STA ETIME+2
+260C  AD BD 52                  LDA ETIME+3
+260F  69 00                     ADC #0
+2611  8D BD 52                  STA ETIME+3
+2614  4C 92 25                  JMP EVENTS
+2617  20 BA 24                  JSR EGET
+261A  8D 27 26                  STA EVP1+1
+261D  20 BA 24                  JSR EGET
+2620  8D 28 26                  STA EVP1+2
+2623  20 BA 24                  JSR EGET
+2626  8D 00 04                  STA $0400
+2629  4C B2 25                  JMP EVCMD
+262C  20 BA 24                  JSR EGET
+262F  8D F0 52                  STA T0
+2632  20 BA 24                  JSR EGET
+2635  AE F0 52                  LDX T0
+2638  9D 00 D4                  STA SIDBASE,X
+263B  4C B2 25                  JMP EVCMD
+263E  20 BA 24                  JSR EGET
+2641  8D F0 52                  STA T0
+2644  20 BA 24                  JSR EGET
+2647  AA                        TAX
+2648  AC F0 52                  LDY T0
+264B  BD 00 4E                  LDA SFPL,X
+264E  99 00 D4                  STA SIDBASE,Y
+2651  BD 80 4E                  LDA SFPH,X
+2654  99 01 D4                  STA SIDBASE+1,Y
+2657  4C B2 25                  JMP EVCMD
+265A  20 BA 24                  JSR EGET
+265D  8D F0 52                  STA T0
+2660  20 BA 24                  JSR EGET
+2663  18                        CLC
+2664  6D EA 52                  ADC SCRHI
+2667  8D 8B 26                  STA EVT1+2
+266A  AD F0 52                  LDA T0
+266D  8D 8A 26                  STA EVT1+1
+2670  20 BA 24                  JSR EGET
+2673  8D F1 52                  STA T1
+2676  A9 00                     LDA #0
+2678  8D F2 52                  STA T2
+267B  AD F2 52                  LDA T2
+267E  CD F1 52                  CMP T1
+2681  B0 0F                     BCS EVT2
+2683  20 BA 24                  JSR EGET
+2686  AE F2 52                  LDX T2
+2689  9D 00 08                  STA $0800,X
+268C  EE F2 52                  INC T2
+268F  4C 7B 26                  JMP EVT0
+2692  4C B2 25                  JMP EVCMD
+2695  20 BA 24                  JSR EGET
+2698  18                        CLC
+2699  6D E0 52                  ADC TYB
+269C  8D 4E D0                  STA TEXTYL
+269F  20 BA 24                  JSR EGET
+26A2  6D E1 52                  ADC TYB+1
+26A5  29 0F                     AND #$0F
+26A7  0D E3 52                  ORA SAVTYH
+26AA  8D 4F D0                  STA TEXTYH
+26AD  4C B2 25                  JMP EVCMD
+26B0  20 BA 24                  JSR EGET
+26B3  8D DE 26                  STA EVL1+1
+26B6  20 BA 24                  JSR EGET
+26B9  18                        CLC
+26BA  6D EA 52                  ADC SCRHI
+26BD  8D DF 26                  STA EVL1+2
+26C0  20 BA 24                  JSR EGET
+26C3  8D F6 52                  STA CNTL
+26C6  20 BA 24                  JSR EGET
+26C9  8D F7 52                  STA CNTH
+26CC  20 BA 24                  JSR EGET
+26CF  8D F3 52                  STA T3
+26D2  AD F6 52                  LDA CNTL
+26D5  0D F7 52                  ORA CNTH
+26D8  F0 1C                     BEQ EVL2
+26DA  AD F3 52                  LDA T3
+26DD  8D 00 08                  STA $0800
+26E0  EE DE 26                  INC EVL1+1
+26E3  D0 03                     BNE EVL3
+26E5  EE DF 26                  INC EVL1+2
+26E8  AD F6 52                  LDA CNTL
+26EB  D0 03                     BNE EVL4
+26ED  CE F7 52                  DEC CNTH
+26F0  CE F6 52                  DEC CNTL
+26F3  4C D2 26                  JMP EVL0
+26F6  4C B2 25                  JMP EVCMD
+26F9  20 BA 24                  JSR EGET
+26FC  8D 6F 24                  STA MUW1+1
+26FF  8D 74 24                  STA MUW3+1
+2702  EE 74 24                  INC MUW3+1
+2705  20 BA 24                  JSR EGET
+2708  18                        CLC
+2709  6D EA 52                  ADC SCRHI
+270C  8D 70 24                  STA MUW1+2
+270F  8D 75 24                  STA MUW3+2
+2712  AD 6F 24                  LDA MUW1+1
+2715  C9 FF                     CMP #$FF
+2717  D0 03                     BNE EVM1
+2719  EE 75 24                  INC MUW3+2
+271C  A9 01                     LDA #1
+271E  8D C6 52                  STA METER
+2721  A9 00                     LDA #0
+2723  8D C4 52                  STA SLWIN
+2726  8D C5 52                  STA SLWIN+1
+2729  18                        CLC
+272A  AD B4 52                  LDA TPLAY
+272D  69 10                     ADC #<10000
+272F  8D C9 52                  STA NEXTM
+2732  AD B5 52                  LDA TPLAY+1
+2735  69 27                     ADC #>10000
+2737  8D CA 52                  STA NEXTM+1
+273A  AD B6 52                  LDA TPLAY+2
+273D  69 00                     ADC #0
+273F  8D CB 52                  STA NEXTM+2
+2742  AD B7 52                  LDA TPLAY+3
+2745  69 00                     ADC #0
+2747  8D CC 52                  STA NEXTM+3
+274A  4C B2 25                  JMP EVCMD
+274D  AD 59 52                  LDA VMODE
+2750  C9 02                     CMP #2
+2752  D0 03                     BNE FR0
+2754  4C B5 28                  JMP DERIVE
+2757  AD 5A 52                  LDA VCNT
+275A  F0 03                     BEQ FR0R
+275C  4C 50 28                  JMP FRAPPLY
+275F  20 A0 24                  JSR VGET
+2762  C9 FF                     CMP #$FF
+2764  D0 08                     BNE FR1
+2766  A9 02                     LDA #2
+2768  8D 59 52                  STA VMODE
+276B  4C B5 28                  JMP DERIVE
+276E  C9 80                     CMP #$80
+2770  90 10                     BCC FRRAMP
+2772  29 7F                     AND #$7F
+2774  18                        CLC
+2775  69 01                     ADC #1
+2777  8D 5A 52                  STA VCNT
+277A  A9 00                     LDA #0
+277C  8D 59 52                  STA VMODE
+277F  4C 50 28                  JMP FRAPPLY
+2782  8D 5B 52                  STA VH
+2785  A2 00                     LDX #0
+2787  8E F3 52                  STX T3
+278A  20 A0 24                  JSR VGET
+278D  AE F3 52                  LDX T3
+2790  9D 40 52                  STA TGT,X
+2793  E8                        INX
+2794  E0 0F                     CPX #15
+2796  D0 EF                     BNE FRT
+2798  20 A0 24                  JSR VGET
+279B  8D 56 52                  STA PTL
+279E  20 A0 24                  JSR VGET
+27A1  8D 57 52                  STA PTH
+27A4  20 A0 24                  JSR VGET
+27A7  8D 58 52                  STA PLACE
+27AA  AD 5B 52                  LDA VH
+27AD  D0 03                     BNE FRI
+27AF  4C 3D 28                  JMP FRCNT
+27B2  A2 00                     LDX #0
+27B4  38                        SEC
+27B5  A9 00                     LDA #0
+27B7  FD 00 52                  SBC ACCL,X
+27BA  8D AA 52                  STA DL
+27BD  BD 40 52                  LDA TGT,X
+27C0  FD 10 52                  SBC ACCH,X
+27C3  8D AC 52                  STA DH
+27C6  A9 00                     LDA #0
+27C8  E9 00                     SBC #0
+27CA  8D A9 52                  STA DS
+27CD  AC 5B 52                  LDY VH
+27D0  AD A9 52                  LDA DS
+27D3  C9 80                     CMP #$80
+27D5  6E A9 52                  ROR DS
+27D8  6E AC 52                  ROR DH
+27DB  6E AA 52                  ROR DL
+27DE  88                        DEY
+27DF  D0 EF                     BNE FRI2
+27E1  AD AA 52                  LDA DL
+27E4  9D 20 52                  STA INCL,X
+27E7  AD AC 52                  LDA DH
+27EA  9D 30 52                  STA INCH,X
+27ED  E8                        INX
+27EE  E0 0F                     CPX #15
+27F0  D0 C2                     BNE FRI1
+27F2  38                        SEC
+27F3  A9 00                     LDA #0
+27F5  ED 50 52                  SBC P0
+27F8  8D AA 52                  STA DL
+27FB  AD 56 52                  LDA PTL
+27FE  ED 51 52                  SBC P1
+2801  8D AB 52                  STA DM
+2804  AD 57 52                  LDA PTH
+2807  ED 52 52                  SBC P2
+280A  8D AC 52                  STA DH
+280D  A9 00                     LDA #0
+280F  E9 00                     SBC #0
+2811  8D A9 52                  STA DS
+2814  AC 5B 52                  LDY VH
+2817  AD A9 52                  LDA DS
+281A  C9 80                     CMP #$80
+281C  6E A9 52                  ROR DS
+281F  6E AC 52                  ROR DH
+2822  6E AB 52                  ROR DM
+2825  6E AA 52                  ROR DL
+2828  88                        DEY
+2829  D0 EC                     BNE FRI3
+282B  AD AA 52                  LDA DL
+282E  8D 53 52                  STA PI0
+2831  AD AB 52                  LDA DM
+2834  8D 54 52                  STA PI1
+2837  AD AC 52                  LDA DH
+283A  8D 55 52                  STA PI2
+283D  A9 01                     LDA #1
+283F  AC 5B 52                  LDY VH
+2842  F0 04                     BEQ FRC2
+2844  0A                        ASL A
+2845  88                        DEY
+2846  D0 FC                     BNE FRC1
+2848  8D 5A 52                  STA VCNT
+284B  A9 01                     LDA #1
+284D  8D 59 52                  STA VMODE
+2850  CE 5A 52                  DEC VCNT
+2853  AD 59 52                  LDA VMODE
+2856  F0 5D                     BEQ DERIVE
+2858  AD 5A 52                  LDA VCNT
+285B  D0 24                     BNE FRADD
+285D  A2 0E                     LDX #14
+285F  BD 40 52                  LDA TGT,X
+2862  9D 10 52                  STA ACCH,X
+2865  A9 00                     LDA #0
+2867  9D 00 52                  STA ACCL,X
+286A  CA                        DEX
+286B  10 F2                     BPL FRS
+286D  A9 00                     LDA #0
+286F  8D 50 52                  STA P0
+2872  AD 56 52                  LDA PTL
+2875  8D 51 52                  STA P1
+2878  AD 57 52                  LDA PTH
+287B  8D 52 52                  STA P2
+287E  4C B5 28                  JMP DERIVE
+2881  A2 0E                     LDX #14
+2883  18                        CLC
+2884  BD 00 52                  LDA ACCL,X
+2887  7D 20 52                  ADC INCL,X
+288A  9D 00 52                  STA ACCL,X
+288D  BD 10 52                  LDA ACCH,X
+2890  7D 30 52                  ADC INCH,X
+2893  9D 10 52                  STA ACCH,X
+2896  CA                        DEX
+2897  10 EA                     BPL FRA1
+2899  18                        CLC
+289A  AD 50 52                  LDA P0
+289D  6D 53 52                  ADC PI0
+28A0  8D 50 52                  STA P0
+28A3  AD 51 52                  LDA P1
+28A6  6D 54 52                  ADC PI1
+28A9  8D 51 52                  STA P1
+28AC  AD 52 52                  LDA P2
+28AF  6D 55 52                  ADC PI2
+28B2  8D 52 52                  STA P2
+28B5  38                        SEC
+28B6  AD 10 52                  LDA ACCH+0
+28B9  ED 11 52                  SBC ACCH+1
+28BC  90 2A                     BCC DJN1
+28BE  AA                        TAX
+28BF  BD 00 47                  LDA KTL,X
+28C2  8D 1B 30                  STA J1K+1
+28C5  BD 00 48                  LDA KTH,X
+28C8  8D 20 30                  STA J1KH+1
+28CB  A9 38                     LDA #$38
+28CD  8D 24 30                  STA J1C1
+28D0  A9 ED                     LDA #$ED
+28D2  8D 28 30                  STA J1O1
+28D5  8D 31 30                  STA J1O2
+28D8  A9 18                     LDA #$18
+28DA  8D 37 30                  STA J1C2
+28DD  A9 6D                     LDA #$6D
+28DF  8D 3B 30                  STA J1O3
+28E2  8D 44 30                  STA J1O4
+28E5  4C 14 29                  JMP DJD1
+28E8  49 FF                     EOR #$FF
+28EA  18                        CLC
+28EB  69 01                     ADC #1
+28ED  AA                        TAX
+28EE  BD 00 47                  LDA KTL,X
+28F1  8D 1B 30                  STA J1K+1
+28F4  BD 00 48                  LDA KTH,X
+28F7  8D 20 30                  STA J1KH+1
+28FA  A9 18                     LDA #$18
+28FC  8D 24 30                  STA J1C1
+28FF  A9 6D                     LDA #$6D
+2901  8D 28 30                  STA J1O1
+2904  8D 31 30                  STA J1O2
+2907  A9 38                     LDA #$38
+2909  8D 37 30                  STA J1C2
+290C  A9 ED                     LDA #$ED
+290E  8D 3B 30                  STA J1O3
+2911  8D 44 30                  STA J1O4
+2914  38                        SEC
+2915  AD 11 52                  LDA ACCH+1
+2918  ED 12 52                  SBC ACCH+2
+291B  90 2A                     BCC DJN2
+291D  AA                        TAX
+291E  BD 00 47                  LDA KTL,X
+2921  8D 7C 2E                  STA J2K+1
+2924  BD 00 48                  LDA KTH,X
+2927  8D 81 2E                  STA J2KH+1
+292A  A9 38                     LDA #$38
+292C  8D 85 2E                  STA J2C1
+292F  A9 ED                     LDA #$ED
+2931  8D 89 2E                  STA J2O1
+2934  8D 92 2E                  STA J2O2
+2937  A9 18                     LDA #$18
+2939  8D 98 2E                  STA J2C2
+293C  A9 6D                     LDA #$6D
+293E  8D 9C 2E                  STA J2O3
+2941  8D A5 2E                  STA J2O4
+2944  4C 73 29                  JMP DJD2
+2947  49 FF                     EOR #$FF
+2949  18                        CLC
+294A  69 01                     ADC #1
+294C  AA                        TAX
+294D  BD 00 47                  LDA KTL,X
+2950  8D 7C 2E                  STA J2K+1
+2953  BD 00 48                  LDA KTH,X
+2956  8D 81 2E                  STA J2KH+1
+2959  A9 18                     LDA #$18
+295B  8D 85 2E                  STA J2C1
+295E  A9 6D                     LDA #$6D
+2960  8D 89 2E                  STA J2O1
+2963  8D 92 2E                  STA J2O2
+2966  A9 38                     LDA #$38
+2968  8D 98 2E                  STA J2C2
+296B  A9 ED                     LDA #$ED
+296D  8D 9C 2E                  STA J2O3
+2970  8D A5 2E                  STA J2O4
+2973  38                        SEC
+2974  AD 12 52                  LDA ACCH+2
+2977  ED 13 52                  SBC ACCH+3
+297A  90 2A                     BCC DJN3
+297C  AA                        TAX
+297D  BD 00 47                  LDA KTL,X
+2980  8D 68 30                  STA J3K+1
+2983  BD 00 48                  LDA KTH,X
+2986  8D 6D 30                  STA J3KH+1
+2989  A9 38                     LDA #$38
+298B  8D 71 30                  STA J3C1
+298E  A9 ED                     LDA #$ED
+2990  8D 75 30                  STA J3O1
+2993  8D 7E 30                  STA J3O2
+2996  A9 18                     LDA #$18
+2998  8D 84 30                  STA J3C2
+299B  A9 6D                     LDA #$6D
+299D  8D 88 30                  STA J3O3
+29A0  8D 91 30                  STA J3O4
+29A3  4C D2 29                  JMP DJD3
+29A6  49 FF                     EOR #$FF
+29A8  18                        CLC
+29A9  69 01                     ADC #1
+29AB  AA                        TAX
+29AC  BD 00 47                  LDA KTL,X
+29AF  8D 68 30                  STA J3K+1
+29B2  BD 00 48                  LDA KTH,X
+29B5  8D 6D 30                  STA J3KH+1
+29B8  A9 18                     LDA #$18
+29BA  8D 71 30                  STA J3C1
+29BD  A9 6D                     LDA #$6D
+29BF  8D 75 30                  STA J3O1
+29C2  8D 7E 30                  STA J3O2
+29C5  A9 38                     LDA #$38
+29C7  8D 84 30                  STA J3C2
+29CA  A9 ED                     LDA #$ED
+29CC  8D 88 30                  STA J3O3
+29CF  8D 91 30                  STA J3O4
+29D2  38                        SEC
+29D3  AD 13 52                  LDA ACCH+3
+29D6  ED 14 52                  SBC ACCH+4
+29D9  90 2A                     BCC DJN4
+29DB  AA                        TAX
+29DC  BD 00 47                  LDA KTL,X
+29DF  8D C9 2E                  STA J4K+1
+29E2  BD 00 48                  LDA KTH,X
+29E5  8D CE 2E                  STA J4KH+1
+29E8  A9 38                     LDA #$38
+29EA  8D D2 2E                  STA J4C1
+29ED  A9 ED                     LDA #$ED
+29EF  8D D6 2E                  STA J4O1
+29F2  8D DF 2E                  STA J4O2
+29F5  A9 18                     LDA #$18
+29F7  8D E5 2E                  STA J4C2
+29FA  A9 6D                     LDA #$6D
+29FC  8D E9 2E                  STA J4O3
+29FF  8D F2 2E                  STA J4O4
+2A02  4C 31 2A                  JMP DJD4
+2A05  49 FF                     EOR #$FF
+2A07  18                        CLC
+2A08  69 01                     ADC #1
+2A0A  AA                        TAX
+2A0B  BD 00 47                  LDA KTL,X
+2A0E  8D C9 2E                  STA J4K+1
+2A11  BD 00 48                  LDA KTH,X
+2A14  8D CE 2E                  STA J4KH+1
+2A17  A9 18                     LDA #$18
+2A19  8D D2 2E                  STA J4C1
+2A1C  A9 6D                     LDA #$6D
+2A1E  8D D6 2E                  STA J4O1
+2A21  8D DF 2E                  STA J4O2
+2A24  A9 38                     LDA #$38
+2A26  8D E5 2E                  STA J4C2
+2A29  A9 ED                     LDA #$ED
+2A2B  8D E9 2E                  STA J4O3
+2A2E  8D F2 2E                  STA J4O4
+2A31  38                        SEC
+2A32  AD 14 52                  LDA ACCH+4
+2A35  ED 15 52                  SBC ACCH+5
+2A38  90 2A                     BCC DJN5
+2A3A  AA                        TAX
+2A3B  BD 00 47                  LDA KTL,X
+2A3E  8D B5 30                  STA J5K+1
+2A41  BD 00 48                  LDA KTH,X
+2A44  8D BA 30                  STA J5KH+1
+2A47  A9 38                     LDA #$38
+2A49  8D BE 30                  STA J5C1
+2A4C  A9 ED                     LDA #$ED
+2A4E  8D C2 30                  STA J5O1
+2A51  8D CB 30                  STA J5O2
+2A54  A9 18                     LDA #$18
+2A56  8D D1 30                  STA J5C2
+2A59  A9 6D                     LDA #$6D
+2A5B  8D D5 30                  STA J5O3
+2A5E  8D DE 30                  STA J5O4
+2A61  4C 90 2A                  JMP DJD5
+2A64  49 FF                     EOR #$FF
+2A66  18                        CLC
+2A67  69 01                     ADC #1
+2A69  AA                        TAX
+2A6A  BD 00 47                  LDA KTL,X
+2A6D  8D B5 30                  STA J5K+1
+2A70  BD 00 48                  LDA KTH,X
+2A73  8D BA 30                  STA J5KH+1
+2A76  A9 18                     LDA #$18
+2A78  8D BE 30                  STA J5C1
+2A7B  A9 6D                     LDA #$6D
+2A7D  8D C2 30                  STA J5O1
+2A80  8D CB 30                  STA J5O2
+2A83  A9 38                     LDA #$38
+2A85  8D D1 30                  STA J5C2
+2A88  A9 ED                     LDA #$ED
+2A8A  8D D5 30                  STA J5O3
+2A8D  8D DE 30                  STA J5O4
+2A90  38                        SEC
+2A91  AD 15 52                  LDA ACCH+5
+2A94  ED 16 52                  SBC ACCH+6
+2A97  90 2A                     BCC DJN6
+2A99  AA                        TAX
+2A9A  BD 00 47                  LDA KTL,X
+2A9D  8D 16 2F                  STA J6K+1
+2AA0  BD 00 48                  LDA KTH,X
+2AA3  8D 1B 2F                  STA J6KH+1
+2AA6  A9 38                     LDA #$38
+2AA8  8D 1F 2F                  STA J6C1
+2AAB  A9 ED                     LDA #$ED
+2AAD  8D 23 2F                  STA J6O1
+2AB0  8D 2C 2F                  STA J6O2
+2AB3  A9 18                     LDA #$18
+2AB5  8D 32 2F                  STA J6C2
+2AB8  A9 6D                     LDA #$6D
+2ABA  8D 36 2F                  STA J6O3
+2ABD  8D 3F 2F                  STA J6O4
+2AC0  4C EF 2A                  JMP DJD6
+2AC3  49 FF                     EOR #$FF
+2AC5  18                        CLC
+2AC6  69 01                     ADC #1
+2AC8  AA                        TAX
+2AC9  BD 00 47                  LDA KTL,X
+2ACC  8D 16 2F                  STA J6K+1
+2ACF  BD 00 48                  LDA KTH,X
+2AD2  8D 1B 2F                  STA J6KH+1
+2AD5  A9 18                     LDA #$18
+2AD7  8D 1F 2F                  STA J6C1
+2ADA  A9 6D                     LDA #$6D
+2ADC  8D 23 2F                  STA J6O1
+2ADF  8D 2C 2F                  STA J6O2
+2AE2  A9 38                     LDA #$38
+2AE4  8D 32 2F                  STA J6C2
+2AE7  A9 ED                     LDA #$ED
+2AE9  8D 36 2F                  STA J6O3
+2AEC  8D 3F 2F                  STA J6O4
+2AEF  38                        SEC
+2AF0  AD 16 52                  LDA ACCH+6
+2AF3  ED 17 52                  SBC ACCH+7
+2AF6  90 2A                     BCC DJN7
+2AF8  AA                        TAX
+2AF9  BD 00 47                  LDA KTL,X
+2AFC  8D 02 31                  STA J7K+1
+2AFF  BD 00 48                  LDA KTH,X
+2B02  8D 07 31                  STA J7KH+1
+2B05  A9 38                     LDA #$38
+2B07  8D 0B 31                  STA J7C1
+2B0A  A9 ED                     LDA #$ED
+2B0C  8D 0F 31                  STA J7O1
+2B0F  8D 18 31                  STA J7O2
+2B12  A9 18                     LDA #$18
+2B14  8D 1E 31                  STA J7C2
+2B17  A9 6D                     LDA #$6D
+2B19  8D 22 31                  STA J7O3
+2B1C  8D 2B 31                  STA J7O4
+2B1F  4C 4E 2B                  JMP DJD7
+2B22  49 FF                     EOR #$FF
+2B24  18                        CLC
+2B25  69 01                     ADC #1
+2B27  AA                        TAX
+2B28  BD 00 47                  LDA KTL,X
+2B2B  8D 02 31                  STA J7K+1
+2B2E  BD 00 48                  LDA KTH,X
+2B31  8D 07 31                  STA J7KH+1
+2B34  A9 18                     LDA #$18
+2B36  8D 0B 31                  STA J7C1
+2B39  A9 6D                     LDA #$6D
+2B3B  8D 0F 31                  STA J7O1
+2B3E  8D 18 31                  STA J7O2
+2B41  A9 38                     LDA #$38
+2B43  8D 1E 31                  STA J7C2
+2B46  A9 ED                     LDA #$ED
+2B48  8D 22 31                  STA J7O3
+2B4B  8D 2B 31                  STA J7O4
+2B4E  38                        SEC
+2B4F  AD 17 52                  LDA ACCH+7
+2B52  ED 18 52                  SBC ACCH+8
+2B55  90 2A                     BCC DJN8
+2B57  AA                        TAX
+2B58  BD 00 47                  LDA KTL,X
+2B5B  8D 63 2F                  STA J8K+1
+2B5E  BD 00 48                  LDA KTH,X
+2B61  8D 68 2F                  STA J8KH+1
+2B64  A9 38                     LDA #$38
+2B66  8D 6C 2F                  STA J8C1
+2B69  A9 ED                     LDA #$ED
+2B6B  8D 70 2F                  STA J8O1
+2B6E  8D 79 2F                  STA J8O2
+2B71  A9 18                     LDA #$18
+2B73  8D 7F 2F                  STA J8C2
+2B76  A9 6D                     LDA #$6D
+2B78  8D 83 2F                  STA J8O3
+2B7B  8D 8C 2F                  STA J8O4
+2B7E  4C AD 2B                  JMP DJD8
+2B81  49 FF                     EOR #$FF
+2B83  18                        CLC
+2B84  69 01                     ADC #1
+2B86  AA                        TAX
+2B87  BD 00 47                  LDA KTL,X
+2B8A  8D 63 2F                  STA J8K+1
+2B8D  BD 00 48                  LDA KTH,X
+2B90  8D 68 2F                  STA J8KH+1
+2B93  A9 18                     LDA #$18
+2B95  8D 6C 2F                  STA J8C1
+2B98  A9 6D                     LDA #$6D
+2B9A  8D 70 2F                  STA J8O1
+2B9D  8D 79 2F                  STA J8O2
+2BA0  A9 38                     LDA #$38
+2BA2  8D 7F 2F                  STA J8C2
+2BA5  A9 ED                     LDA #$ED
+2BA7  8D 83 2F                  STA J8O3
+2BAA  8D 8C 2F                  STA J8O4
+2BAD  38                        SEC
+2BAE  AD 18 52                  LDA ACCH+8
+2BB1  ED 19 52                  SBC ACCH+9
+2BB4  90 2A                     BCC DJN9
+2BB6  AA                        TAX
+2BB7  BD 00 47                  LDA KTL,X
+2BBA  8D 4F 31                  STA J9K+1
+2BBD  BD 00 48                  LDA KTH,X
+2BC0  8D 54 31                  STA J9KH+1
+2BC3  A9 38                     LDA #$38
+2BC5  8D 58 31                  STA J9C1
+2BC8  A9 ED                     LDA #$ED
+2BCA  8D 5C 31                  STA J9O1
+2BCD  8D 65 31                  STA J9O2
+2BD0  A9 18                     LDA #$18
+2BD2  8D 6B 31                  STA J9C2
+2BD5  A9 6D                     LDA #$6D
+2BD7  8D 6F 31                  STA J9O3
+2BDA  8D 78 31                  STA J9O4
+2BDD  4C 0C 2C                  JMP DJD9
+2BE0  49 FF                     EOR #$FF
+2BE2  18                        CLC
+2BE3  69 01                     ADC #1
+2BE5  AA                        TAX
+2BE6  BD 00 47                  LDA KTL,X
+2BE9  8D 4F 31                  STA J9K+1
+2BEC  BD 00 48                  LDA KTH,X
+2BEF  8D 54 31                  STA J9KH+1
+2BF2  A9 18                     LDA #$18
+2BF4  8D 58 31                  STA J9C1
+2BF7  A9 6D                     LDA #$6D
+2BF9  8D 5C 31                  STA J9O1
+2BFC  8D 65 31                  STA J9O2
+2BFF  A9 38                     LDA #$38
+2C01  8D 6B 31                  STA J9C2
+2C04  A9 ED                     LDA #$ED
+2C06  8D 6F 31                  STA J9O3
+2C09  8D 78 31                  STA J9O4
+2C0C  AD 1A 52                  LDA ACCH+10
+2C0F  8D 98 2D                  STA AVK+1
+2C12  AD 1B 52                  LDA ACCH+11
+2C15  8D 60 52                  STA AHV
+2C18  8D F0 52                  STA T0
+2C1B  A9 00                     LDA #0
+2C1D  4E F0 52                  LSR T0
+2C20  6A                        ROR A
+2C21  4E F0 52                  LSR T0
+2C24  6A                        ROR A
+2C25  4E F0 52                  LSR T0
+2C28  6A                        ROR A
+2C29  8D F0 2D                  STA ASPK+1
+2C2C  AD F0 52                  LDA T0
+2C2F  8D F5 2D                  STA ASPKH+1
+2C32  A9 00                     LDA #0
+2C34  8D 63 52                  STA FRE
+2C37  8D 64 52                  STA FRO
+2C3A  AD 1C 52                  LDA ACCH+12
+2C3D  F0 78                     BEQ DFR0
+2C3F  8D F0 52                  STA T0
+2C42  A9 00                     LDA #0
+2C44  4E F0 52                  LSR T0
+2C47  6A                        ROR A
+2C48  4E F0 52                  LSR T0
+2C4B  6A                        ROR A
+2C4C  4E F0 52                  LSR T0
+2C4F  6A                        ROR A
+2C50  8D E1 2F                  STA FREK+1
+2C53  8D 9A 31                  STA FROK+1
+2C56  AD F0 52                  LDA T0
+2C59  8D E6 2F                  STA FREKH+1
+2C5C  8D 9F 31                  STA FROKH+1
+2C5F  AD 58 52                  LDA PLACE
+2C62  18                        CLC
+2C63  69 70                     ADC #<RL0
+2C65  8D EC 2F                  STA FREA1+1
+2C68  8D F2 2F                  STA FREA2+1
+2C6B  8D A5 31                  STA FROA1+1
+2C6E  8D AB 31                  STA FROA2+1
+2C71  A9 52                     LDA #>RL0
+2C73  69 00                     ADC #0
+2C75  8D ED 2F                  STA FREA1+2
+2C78  8D F3 2F                  STA FREA2+2
+2C7B  8D A6 31                  STA FROA1+2
+2C7E  8D AC 31                  STA FROA2+2
+2C81  AD 58 52                  LDA PLACE
+2C84  18                        CLC
+2C85  69 7A                     ADC #<RH0
+2C87  8D F5 2F                  STA FREA3+1
+2C8A  8D FB 2F                  STA FREA4+1
+2C8D  8D AE 31                  STA FROA3+1
+2C90  8D B4 31                  STA FROA4+1
+2C93  A9 52                     LDA #>RH0
+2C95  69 00                     ADC #0
+2C97  8D F6 2F                  STA FREA3+2
+2C9A  8D FC 2F                  STA FREA4+2
+2C9D  8D AF 31                  STA FROA3+2
+2CA0  8D B5 31                  STA FROA4+2
+2CA3  AD 58 52                  LDA PLACE
+2CA6  29 01                     AND #1
+2CA8  D0 08                     BNE DFRO
+2CAA  A9 01                     LDA #1
+2CAC  8D 63 52                  STA FRE
+2CAF  4C B7 2C                  JMP DFR0
+2CB2  A9 01                     LDA #1
+2CB4  8D 64 52                  STA FRO
+2CB7  AD 1D 52                  LDA ACCH+13
+2CBA  8D 62 52                  STA ANV
+2CBD  8D 66 32                  STA NASK+1
+2CC0  AE 5C 52                  LDX VPH
+2CC3  BD 00 4B                  LDA SIN8,X
+2CC6  8D 70 D7                  STA MULA0
+2CC9  A8                        TAY
+2CCA  B9 00 40                  LDA SEXT,Y
+2CCD  8D 71 D7                  STA MULA1
+2CD0  8D 72 D7                  STA MULA2
+2CD3  8D 73 D7                  STA MULA3
+2CD6  AD 1E 52                  LDA ACCH+14
+2CD9  8D 74 D7                  STA MULB0
+2CDC  A9 00                     LDA #0
+2CDE  8D 75 D7                  STA MULB1
+2CE1  18                        CLC
+2CE2  AD 51 52                  LDA P1
+2CE5  6D 79 D7                  ADC MULO1
+2CE8  8D F0 52                  STA T0
+2CEB  AD 52 52                  LDA P2
+2CEE  6D 7A D7                  ADC MULO2
+2CF1  8D F1 52                  STA T1
+2CF4  AE F1 52                  LDX T1
+2CF7  BD 80 4D                  LDA GTSEL,X
+2CFA  A8                        TAY
+2CFB  B9 5C 2D                  LDA GTHI,Y
+2CFE  8D 83 2D                  STA GTLOP+2
+2D01  18                        CLC
+2D02  69 01                     ADC #1
+2D04  8D 89 2D                  STA GTHOP+2
+2D07  BD 00 4C                  LDA NIL,X
+2D0A  8D 70 D7                  STA MULA0
+2D0D  8D F2 52                  STA T2
+2D10  BD 80 4C                  LDA NIM,X
+2D13  8D 71 D7                  STA MULA1
+2D16  8D F3 52                  STA T3
+2D19  BD 00 4D                  LDA NIH,X
+2D1C  8D 72 D7                  STA MULA2
+2D1F  8D F4 52                  STA D0
+2D22  A9 00                     LDA #0
+2D24  8D 73 D7                  STA MULA3
+2D27  AE F0 52                  LDX T0
+2D2A  BD 00 49                  LDA FRL,X
+2D2D  8D 74 D7                  STA MULB0
+2D30  BD 00 4A                  LDA FRH,X
+2D33  8D 75 D7                  STA MULB1
+2D36  18                        CLC
+2D37  AD F2 52                  LDA T2
+2D3A  6D 7A D7                  ADC MULO2
+2D3D  8D 9D 52                  STA INC0
+2D40  AD F3 52                  LDA T3
+2D43  6D 7B D7                  ADC MULO3
+2D46  8D 9E 52                  STA INC1
+2D49  AD F4 52                  LDA D0
+2D4C  6D 7C D7                  ADC MULO4
+2D4F  8D 9F 52                  STA INC2
+2D52  18                        CLC
+2D53  AD 5C 52                  LDA VPH
+2D56  69 07                     ADC #7
+2D58  8D 5C 52                  STA VPH
+2D5B  60                        RTS
+2D5C  41 43 45                  .byte >GT0L, >GT1L, >GT2L
+2D5F  A9 32                     LDA #50
+2D61  8D A8 52                  STA SCNT
+2D64  18                        CLC
+2D65  AD 9A 52                  LDA PH0
+2D68  6D 9D 52                  ADC INC0
+2D6B  8D 9A 52                  STA PH0
+2D6E  AD 9B 52                  LDA PH1
+2D71  6D 9E 52                  ADC INC1
+2D74  8D 9B 52                  STA PH1
+2D77  AD 9C 52                  LDA PH2
+2D7A  6D 9F 52                  ADC INC2
+2D7D  8D 9C 52                  STA PH2
+2D80  AA                        TAX
+2D81  BD 00 41                  LDA GT0L,X
+2D84  8D 70 D7                  STA MULA0
+2D87  BD 00 42                  LDA GT0H,X
+2D8A  8D 71 D7                  STA MULA1
+2D8D  A8                        TAY
+2D8E  B9 00 40                  LDA SEXT,Y
+2D91  8D 72 D7                  STA MULA2
+2D94  8D 73 D7                  STA MULA3
+2D97  A9 00                     LDA #0
+2D99  8D 74 D7                  STA MULB0
+2D9C  A9 00                     LDA #0
+2D9E  8D 75 D7                  STA MULB1
+2DA1  AD 79 D7                  LDA MULO1
+2DA4  8D A2 52                  STA SRCL
+2DA7  AD 7A D7                  LDA MULO2
+2DAA  8D A3 52                  STA SRCH
+2DAD  AD A1 52                  LDA XH
+2DB0  4A                        LSR A
+2DB1  AD A0 52                  LDA XL
+2DB4  6A                        ROR A
+2DB5  4D A1 52                  EOR XH
+2DB8  8D A1 52                  STA XH
+2DBB  A9 00                     LDA #0
+2DBD  6A                        ROR A
+2DBE  4D A0 52                  EOR XL
+2DC1  8D A0 52                  STA XL
+2DC4  AD A1 52                  LDA XH
+2DC7  4A                        LSR A
+2DC8  4D A0 52                  EOR XL
+2DCB  8D A0 52                  STA XL
+2DCE  4D A1 52                  EOR XH
+2DD1  8D A1 52                  STA XH
+2DD4  AD 60 52                  LDA AHV
+2DD7  F0 33                     BEQ NOASP
+2DD9  AD A0 52                  LDA XL
+2DDC  8D 70 D7                  STA MULA0
+2DDF  AD A1 52                  LDA XH
+2DE2  8D 71 D7                  STA MULA1
+2DE5  A8                        TAY
+2DE6  B9 00 40                  LDA SEXT,Y
+2DE9  8D 72 D7                  STA MULA2
+2DEC  8D 73 D7                  STA MULA3
+2DEF  A9 00                     LDA #0
+2DF1  8D 74 D7                  STA MULB0
+2DF4  A9 00                     LDA #0
+2DF6  8D 75 D7                  STA MULB1
+2DF9  18                        CLC
+2DFA  AD A2 52                  LDA SRCL
+2DFD  6D 7A D7                  ADC MULO2
+2E00  8D A2 52                  STA SRCL
+2E03  AD A3 52                  LDA SRCH
+2E06  6D 7B D7                  ADC MULO3
+2E09  8D A3 52                  STA SRCH
+2E0C  AD 8E 52                  LDA LH0
+2E0F  8D A5 52                  STA TH
+2E12  AD 84 52                  LDA LL0
+2E15  8D A4 52                  STA TL
+2E18  AD A5 52                  LDA TH
+2E1B  C9 80                     CMP #$80
+2E1D  6A                        ROR A
+2E1E  8D A5 52                  STA TH
+2E21  AD A4 52                  LDA TL
+2E24  6A                        ROR A
+2E25  8D A4 52                  STA TL
+2E28  AD A5 52                  LDA TH
+2E2B  C9 80                     CMP #$80
+2E2D  6A                        ROR A
+2E2E  8D A5 52                  STA TH
+2E31  AD A4 52                  LDA TL
+2E34  6A                        ROR A
+2E35  8D A4 52                  STA TL
+2E38  38                        SEC
+2E39  AD 84 52                  LDA LL0
+2E3C  ED A4 52                  SBC TL
+2E3F  8D A4 52                  STA TL
+2E42  AD 8E 52                  LDA LH0
+2E45  ED A5 52                  SBC TH
+2E48  8D A5 52                  STA TH
+2E4B  18                        CLC
+2E4C  AD A4 52                  LDA TL
+2E4F  6D A2 52                  ADC SRCL
+2E52  8D 70 52                  STA RL0
+2E55  AD A5 52                  LDA TH
+2E58  6D A3 52                  ADC SRCH
+2E5B  8D 7A 52                  STA RH0
+2E5E  18                        CLC
+2E5F  AD 71 52                  LDA RL0+1
+2E62  6D 86 52                  ADC LL0+2
+2E65  8D 70 D7                  STA MULA0
+2E68  AD 7B 52                  LDA RH0+1
+2E6B  6D 90 52                  ADC LH0+2
+2E6E  8D 71 D7                  STA MULA1
+2E71  A8                        TAY
+2E72  B9 00 40                  LDA SEXT,Y
+2E75  8D 72 D7                  STA MULA2
+2E78  8D 73 D7                  STA MULA3
+2E7B  A9 00                     LDA #0
+2E7D  8D 74 D7                  STA MULB0
+2E80  A9 00                     LDA #0
+2E82  8D 75 D7                  STA MULB1
+2E85  38                        SEC
+2E86  AD 71 52                  LDA RL0+1
+2E89  ED 7A D7                  SBC MULO2
+2E8C  8D 72 52                  STA RL0+2
+2E8F  AD 7B 52                  LDA RH0+1
+2E92  ED 7B D7                  SBC MULO3
+2E95  8D 7C 52                  STA RH0+2
+2E98  18                        CLC
+2E99  AD 86 52                  LDA LL0+2
+2E9C  6D 7A D7                  ADC MULO2
+2E9F  8D 85 52                  STA LL0+1
+2EA2  AD 90 52                  LDA LH0+2
+2EA5  6D 7B D7                  ADC MULO3
+2EA8  8D 8F 52                  STA LH0+1
+2EAB  18                        CLC
+2EAC  AD 73 52                  LDA RL0+3
+2EAF  6D 88 52                  ADC LL0+4
+2EB2  8D 70 D7                  STA MULA0
+2EB5  AD 7D 52                  LDA RH0+3
+2EB8  6D 92 52                  ADC LH0+4
+2EBB  8D 71 D7                  STA MULA1
+2EBE  A8                        TAY
+2EBF  B9 00 40                  LDA SEXT,Y
+2EC2  8D 72 D7                  STA MULA2
+2EC5  8D 73 D7                  STA MULA3
+2EC8  A9 00                     LDA #0
+2ECA  8D 74 D7                  STA MULB0
+2ECD  A9 00                     LDA #0
+2ECF  8D 75 D7                  STA MULB1
+2ED2  38                        SEC
+2ED3  AD 73 52                  LDA RL0+3
+2ED6  ED 7A D7                  SBC MULO2
+2ED9  8D 74 52                  STA RL0+4
+2EDC  AD 7D 52                  LDA RH0+3
+2EDF  ED 7B D7                  SBC MULO3
+2EE2  8D 7E 52                  STA RH0+4
+2EE5  18                        CLC
+2EE6  AD 88 52                  LDA LL0+4
+2EE9  6D 7A D7                  ADC MULO2
+2EEC  8D 87 52                  STA LL0+3
+2EEF  AD 92 52                  LDA LH0+4
+2EF2  6D 7B D7                  ADC MULO3
+2EF5  8D 91 52                  STA LH0+3
+2EF8  18                        CLC
+2EF9  AD 75 52                  LDA RL0+5
+2EFC  6D 8A 52                  ADC LL0+6
+2EFF  8D 70 D7                  STA MULA0
+2F02  AD 7F 52                  LDA RH0+5
+2F05  6D 94 52                  ADC LH0+6
+2F08  8D 71 D7                  STA MULA1
+2F0B  A8                        TAY
+2F0C  B9 00 40                  LDA SEXT,Y
+2F0F  8D 72 D7                  STA MULA2
+2F12  8D 73 D7                  STA MULA3
+2F15  A9 00                     LDA #0
+2F17  8D 74 D7                  STA MULB0
+2F1A  A9 00                     LDA #0
+2F1C  8D 75 D7                  STA MULB1
+2F1F  38                        SEC
+2F20  AD 75 52                  LDA RL0+5
+2F23  ED 7A D7                  SBC MULO2
+2F26  8D 76 52                  STA RL0+6
+2F29  AD 7F 52                  LDA RH0+5
+2F2C  ED 7B D7                  SBC MULO3
+2F2F  8D 80 52                  STA RH0+6
+2F32  18                        CLC
+2F33  AD 8A 52                  LDA LL0+6
+2F36  6D 7A D7                  ADC MULO2
+2F39  8D 89 52                  STA LL0+5
+2F3C  AD 94 52                  LDA LH0+6
+2F3F  6D 7B D7                  ADC MULO3
+2F42  8D 93 52                  STA LH0+5
+2F45  18                        CLC
+2F46  AD 77 52                  LDA RL0+7
+2F49  6D 8C 52                  ADC LL0+8
+2F4C  8D 70 D7                  STA MULA0
+2F4F  AD 81 52                  LDA RH0+7
+2F52  6D 96 52                  ADC LH0+8
+2F55  8D 71 D7                  STA MULA1
+2F58  A8                        TAY
+2F59  B9 00 40                  LDA SEXT,Y
+2F5C  8D 72 D7                  STA MULA2
+2F5F  8D 73 D7                  STA MULA3
+2F62  A9 00                     LDA #0
+2F64  8D 74 D7                  STA MULB0
+2F67  A9 00                     LDA #0
+2F69  8D 75 D7                  STA MULB1
+2F6C  38                        SEC
+2F6D  AD 77 52                  LDA RL0+7
+2F70  ED 7A D7                  SBC MULO2
+2F73  8D 78 52                  STA RL0+8
+2F76  AD 81 52                  LDA RH0+7
+2F79  ED 7B D7                  SBC MULO3
+2F7C  8D 82 52                  STA RH0+8
+2F7F  18                        CLC
+2F80  AD 8C 52                  LDA LL0+8
+2F83  6D 7A D7                  ADC MULO2
+2F86  8D 8B 52                  STA LL0+7
+2F89  AD 96 52                  LDA LH0+8
+2F8C  6D 7B D7                  ADC MULO3
+2F8F  8D 95 52                  STA LH0+7
+2F92  AD 79 52                  LDA RL0+9
+2F95  8D 70 D7                  STA MULA0
+2F98  AD 83 52                  LDA RH0+9
+2F9B  8D 71 D7                  STA MULA1
+2F9E  A8                        TAY
+2F9F  B9 00 40                  LDA SEXT,Y
+2FA2  8D 72 D7                  STA MULA2
+2FA5  8D 73 D7                  STA MULA3
+2FA8  A9 00                     LDA #0
+2FAA  8D 74 D7                  STA MULB0
+2FAD  A9 20                     LDA #$20
+2FAF  8D 75 D7                  STA MULB1
+2FB2  38                        SEC
+2FB3  AD 7A D7                  LDA MULO2
+2FB6  ED 79 52                  SBC RL0+9
+2FB9  8D 8D 52                  STA LL0+9
+2FBC  AD 7B D7                  LDA MULO3
+2FBF  ED 83 52                  SBC RH0+9
+2FC2  8D 97 52                  STA LH0+9
+2FC5  AD 63 52                  LDA FRE
+2FC8  F0 33                     BEQ NOFRE
+2FCA  AD A0 52                  LDA XL
+2FCD  8D 70 D7                  STA MULA0
+2FD0  AD A1 52                  LDA XH
+2FD3  8D 71 D7                  STA MULA1
+2FD6  A8                        TAY
+2FD7  B9 00 40                  LDA SEXT,Y
+2FDA  8D 72 D7                  STA MULA2
+2FDD  8D 73 D7                  STA MULA3
+2FE0  A9 00                     LDA #0
+2FE2  8D 74 D7                  STA MULB0
+2FE5  A9 00                     LDA #0
+2FE7  8D 75 D7                  STA MULB1
+2FEA  18                        CLC
+2FEB  AD 70 52                  LDA RL0
+2FEE  6D 7A D7                  ADC MULO2
+2FF1  8D 70 52                  STA RL0
+2FF4  AD 7A 52                  LDA RH0
+2FF7  6D 7B D7                  ADC MULO3
+2FFA  8D 7A 52                  STA RH0
+2FFD  18                        CLC
+2FFE  AD 70 52                  LDA RL0+0
+3001  6D 85 52                  ADC LL0+1
+3004  8D 70 D7                  STA MULA0
+3007  AD 7A 52                  LDA RH0+0
+300A  6D 8F 52                  ADC LH0+1
+300D  8D 71 D7                  STA MULA1
+3010  A8                        TAY
+3011  B9 00 40                  LDA SEXT,Y
+3014  8D 72 D7                  STA MULA2
+3017  8D 73 D7                  STA MULA3
+301A  A9 00                     LDA #0
+301C  8D 74 D7                  STA MULB0
+301F  A9 00                     LDA #0
+3021  8D 75 D7                  STA MULB1
+3024  38                        SEC
+3025  AD 70 52                  LDA RL0+0
+3028  ED 7A D7                  SBC MULO2
+302B  8D 71 52                  STA RL0+1
+302E  AD 7A 52                  LDA RH0+0
+3031  ED 7B D7                  SBC MULO3
+3034  8D 7B 52                  STA RH0+1
+3037  18                        CLC
+3038  AD 85 52                  LDA LL0+1
+303B  6D 7A D7                  ADC MULO2
+303E  8D 84 52                  STA LL0+0
+3041  AD 8F 52                  LDA LH0+1
+3044  6D 7B D7                  ADC MULO3
+3047  8D 8E 52                  STA LH0+0
+304A  18                        CLC
+304B  AD 72 52                  LDA RL0+2
+304E  6D 87 52                  ADC LL0+3
+3051  8D 70 D7                  STA MULA0
+3054  AD 7C 52                  LDA RH0+2
+3057  6D 91 52                  ADC LH0+3
+305A  8D 71 D7                  STA MULA1
+305D  A8                        TAY
+305E  B9 00 40                  LDA SEXT,Y
+3061  8D 72 D7                  STA MULA2
+3064  8D 73 D7                  STA MULA3
+3067  A9 00                     LDA #0
+3069  8D 74 D7                  STA MULB0
+306C  A9 00                     LDA #0
+306E  8D 75 D7                  STA MULB1
+3071  38                        SEC
+3072  AD 72 52                  LDA RL0+2
+3075  ED 7A D7                  SBC MULO2
+3078  8D 73 52                  STA RL0+3
+307B  AD 7C 52                  LDA RH0+2
+307E  ED 7B D7                  SBC MULO3
+3081  8D 7D 52                  STA RH0+3
+3084  18                        CLC
+3085  AD 87 52                  LDA LL0+3
+3088  6D 7A D7                  ADC MULO2
+308B  8D 86 52                  STA LL0+2
+308E  AD 91 52                  LDA LH0+3
+3091  6D 7B D7                  ADC MULO3
+3094  8D 90 52                  STA LH0+2
+3097  18                        CLC
+3098  AD 74 52                  LDA RL0+4
+309B  6D 89 52                  ADC LL0+5
+309E  8D 70 D7                  STA MULA0
+30A1  AD 7E 52                  LDA RH0+4
+30A4  6D 93 52                  ADC LH0+5
+30A7  8D 71 D7                  STA MULA1
+30AA  A8                        TAY
+30AB  B9 00 40                  LDA SEXT,Y
+30AE  8D 72 D7                  STA MULA2
+30B1  8D 73 D7                  STA MULA3
+30B4  A9 00                     LDA #0
+30B6  8D 74 D7                  STA MULB0
+30B9  A9 00                     LDA #0
+30BB  8D 75 D7                  STA MULB1
+30BE  38                        SEC
+30BF  AD 74 52                  LDA RL0+4
+30C2  ED 7A D7                  SBC MULO2
+30C5  8D 75 52                  STA RL0+5
+30C8  AD 7E 52                  LDA RH0+4
+30CB  ED 7B D7                  SBC MULO3
+30CE  8D 7F 52                  STA RH0+5
+30D1  18                        CLC
+30D2  AD 89 52                  LDA LL0+5
+30D5  6D 7A D7                  ADC MULO2
+30D8  8D 88 52                  STA LL0+4
+30DB  AD 93 52                  LDA LH0+5
+30DE  6D 7B D7                  ADC MULO3
+30E1  8D 92 52                  STA LH0+4
+30E4  18                        CLC
+30E5  AD 76 52                  LDA RL0+6
+30E8  6D 8B 52                  ADC LL0+7
+30EB  8D 70 D7                  STA MULA0
+30EE  AD 80 52                  LDA RH0+6
+30F1  6D 95 52                  ADC LH0+7
+30F4  8D 71 D7                  STA MULA1
+30F7  A8                        TAY
+30F8  B9 00 40                  LDA SEXT,Y
+30FB  8D 72 D7                  STA MULA2
+30FE  8D 73 D7                  STA MULA3
+3101  A9 00                     LDA #0
+3103  8D 74 D7                  STA MULB0
+3106  A9 00                     LDA #0
+3108  8D 75 D7                  STA MULB1
+310B  38                        SEC
+310C  AD 76 52                  LDA RL0+6
+310F  ED 7A D7                  SBC MULO2
+3112  8D 77 52                  STA RL0+7
+3115  AD 80 52                  LDA RH0+6
+3118  ED 7B D7                  SBC MULO3
+311B  8D 81 52                  STA RH0+7
+311E  18                        CLC
+311F  AD 8B 52                  LDA LL0+7
+3122  6D 7A D7                  ADC MULO2
+3125  8D 8A 52                  STA LL0+6
+3128  AD 95 52                  LDA LH0+7
+312B  6D 7B D7                  ADC MULO3
+312E  8D 94 52                  STA LH0+6
+3131  18                        CLC
+3132  AD 78 52                  LDA RL0+8
+3135  6D 8D 52                  ADC LL0+9
+3138  8D 70 D7                  STA MULA0
+313B  AD 82 52                  LDA RH0+8
+313E  6D 97 52                  ADC LH0+9
+3141  8D 71 D7                  STA MULA1
+3144  A8                        TAY
+3145  B9 00 40                  LDA SEXT,Y
+3148  8D 72 D7                  STA MULA2
+314B  8D 73 D7                  STA MULA3
+314E  A9 00                     LDA #0
+3150  8D 74 D7                  STA MULB0
+3153  A9 00                     LDA #0
+3155  8D 75 D7                  STA MULB1
+3158  38                        SEC
+3159  AD 78 52                  LDA RL0+8
+315C  ED 7A D7                  SBC MULO2
+315F  8D 79 52                  STA RL0+9
+3162  AD 82 52                  LDA RH0+8
+3165  ED 7B D7                  SBC MULO3
+3168  8D 83 52                  STA RH0+9
+316B  18                        CLC
+316C  AD 8D 52                  LDA LL0+9
+316F  6D 7A D7                  ADC MULO2
+3172  8D 8C 52                  STA LL0+8
+3175  AD 97 52                  LDA LH0+9
+3178  6D 7B D7                  ADC MULO3
+317B  8D 96 52                  STA LH0+8
+317E  AD 64 52                  LDA FRO
+3181  F0 33                     BEQ NOFRO
+3183  AD A0 52                  LDA XL
+3186  8D 70 D7                  STA MULA0
+3189  AD A1 52                  LDA XH
+318C  8D 71 D7                  STA MULA1
+318F  A8                        TAY
+3190  B9 00 40                  LDA SEXT,Y
+3193  8D 72 D7                  STA MULA2
+3196  8D 73 D7                  STA MULA3
+3199  A9 00                     LDA #0
+319B  8D 74 D7                  STA MULB0
+319E  A9 00                     LDA #0
+31A0  8D 75 D7                  STA MULB1
+31A3  18                        CLC
+31A4  AD 70 52                  LDA RL0
+31A7  6D 7A D7                  ADC MULO2
+31AA  8D 70 52                  STA RL0
+31AD  AD 7A 52                  LDA RH0
+31B0  6D 7B D7                  ADC MULO3
+31B3  8D 7A 52                  STA RH0
+31B6  AD 79 52                  LDA RL0+9
+31B9  8D A6 52                  STA YL
+31BC  AD 83 52                  LDA RH0+9
+31BF  8D A7 52                  STA YH
+31C2  AD 62 52                  LDA ANV
+31C5  D0 03                     BNE NAS
+31C7  4C 82 32                  JMP NONAS
+31CA  18                        CLC
+31CB  AD 74 52                  LDA RL0+4
+31CE  6D 88 52                  ADC LL0+4
+31D1  8D A4 52                  STA TL
+31D4  AD 7E 52                  LDA RH0+4
+31D7  6D 92 52                  ADC LH0+4
+31DA  8D A5 52                  STA TH
+31DD  AD A5 52                  LDA TH
+31E0  C9 80                     CMP #$80
+31E2  6A                        ROR A
+31E3  8D A5 52                  STA TH
+31E6  AD A4 52                  LDA TL
+31E9  6A                        ROR A
+31EA  8D A4 52                  STA TL
+31ED  AD A5 52                  LDA TH
+31F0  C9 80                     CMP #$80
+31F2  6A                        ROR A
+31F3  8D A5 52                  STA TH
+31F6  AD A4 52                  LDA TL
+31F9  6A                        ROR A
+31FA  8D A4 52                  STA TL
+31FD  AD 99 52                  LDA NLH
+3200  8D AC 52                  STA DH
+3203  AD 98 52                  LDA NLL
+3206  8D AA 52                  STA DL
+3209  AD AC 52                  LDA DH
+320C  C9 80                     CMP #$80
+320E  6A                        ROR A
+320F  8D AC 52                  STA DH
+3212  AD AA 52                  LDA DL
+3215  6A                        ROR A
+3216  8D AA 52                  STA DL
+3219  AD AC 52                  LDA DH
+321C  C9 80                     CMP #$80
+321E  6A                        ROR A
+321F  8D AC 52                  STA DH
+3222  AD AA 52                  LDA DL
+3225  6A                        ROR A
+3226  8D AA 52                  STA DL
+3229  18                        CLC
+322A  AD 98 52                  LDA NLL
+322D  6D A4 52                  ADC TL
+3230  8D 98 52                  STA NLL
+3233  AD 99 52                  LDA NLH
+3236  6D A5 52                  ADC TH
+3239  8D 99 52                  STA NLH
+323C  38                        SEC
+323D  AD 98 52                  LDA NLL
+3240  ED AA 52                  SBC DL
+3243  8D 98 52                  STA NLL
+3246  AD 99 52                  LDA NLH
+3249  ED AC 52                  SBC DH
+324C  8D 99 52                  STA NLH
+324F  AD 98 52                  LDA NLL
+3252  8D 70 D7                  STA MULA0
+3255  AD 99 52                  LDA NLH
+3258  8D 71 D7                  STA MULA1
+325B  A8                        TAY
+325C  B9 00 40                  LDA SEXT,Y
+325F  8D 72 D7                  STA MULA2
+3262  8D 73 D7                  STA MULA3
+3265  A9 00                     LDA #0
+3267  8D 74 D7                  STA MULB0
+326A  A9 00                     LDA #0
+326C  8D 75 D7                  STA MULB1
+326F  18                        CLC
+3270  AD A6 52                  LDA YL
+3273  6D 79 D7                  ADC MULO1
+3276  8D A6 52                  STA YL
+3279  AD A7 52                  LDA YH
+327C  6D 7A D7                  ADC MULO2
+327F  8D A7 52                  STA YH
+3282  0E A6 52                  ASL YL
+3285  2E A7 52                  ROL YH
+3288  0E A6 52                  ASL YL
+328B  2E A7 52                  ROL YH
+328E  AD A6 52                  LDA YL
+3291  8D 00 60                  STA RING
+3294  AD A7 52                  LDA YH
+3297  8D 01 60                  STA RING+1
+329A  18                        CLC
+329B  AD 92 32                  LDA WP1+1
+329E  69 02                     ADC #2
+32A0  8D 92 32                  STA WP1+1
+32A3  09 01                     ORA #1
+32A5  8D 98 32                  STA WP2+1
+32A8  90 11                     BCC WPOK
+32AA  AD 93 32                  LDA WP1+2
+32AD  69 00                     ADC #0
+32AF  C9 70                     CMP #>(RING+$1000)
+32B1  90 02                     BCC WPST
+32B3  A9 60                     LDA #>RING
+32B5  8D 93 32                  STA WP1+2
+32B8  8D 99 32                  STA WP2+2
+32BB  CE A8 52                  DEC SCNT
+32BE  F0 03                     BEQ BLKEND
+32C0  4C 64 2D                  JMP SAMPLE
+32C3  60                        RTS
+4000  00 00 00 00 00 00 00 00   .byte 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+4010  00 00 00 00 00 00 00 00   .byte 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+4020  00 00 00 00 00 00 00 00   .byte 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+4030  00 00 00 00 00 00 00 00   .byte 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+4040  00 00 00 00 00 00 00 00   .byte 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+4050  00 00 00 00 00 00 00 00   .byte 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+4060  00 00 00 00 00 00 00 00   .byte 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+4070  00 00 00 00 00 00 00 00   .byte 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+4080  FF FF FF FF FF FF FF FF   .byte 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255
+4090  FF FF FF FF FF FF FF FF   .byte 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255
+40A0  FF FF FF FF FF FF FF FF   .byte 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255
+40B0  FF FF FF FF FF FF FF FF   .byte 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255
+40C0  FF FF FF FF FF FF FF FF   .byte 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255
+40D0  FF FF FF FF FF FF FF FF   .byte 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255
+40E0  FF FF FF FF FF FF FF FF   .byte 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255
+40F0  FF FF FF FF FF FF FF FF   .byte 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255
+4100  12 2F 4D 68 83 A0 C3 EC   .byte 18, 47, 77, 104, 131, 160, 195, 236, 22, 61, 93, 118, 141, 167, 200, 239
+4110  17 3B 56 6B 7E 95 B2 D5   .byte 23, 59, 86, 107, 126, 149, 178, 213, 248, 22, 44, 59, 73, 90, 114, 144
+4120  AD C4 D2 D9 E0 EB FD 14   .byte 173, 196, 210, 217, 224, 235, 253, 20, 41, 56, 61, 60, 59, 63, 74, 89
+4130  67 6C 68 5E 55 51 55 5D   .byte 103, 108, 104, 94, 85, 81, 85, 93, 97, 93, 80, 61, 43, 32, 29, 29
+4140  19 0C F6 DA C1 AF A6 9F   .byte 25, 12, 246, 218, 193, 175, 166, 159, 148, 126, 95, 59, 27, 5, 246, 234
+4150  D8 BB 94 6A 45 2B 1A 09   .byte 216, 187, 148, 106, 69, 43, 26, 9, 242, 207, 162, 116, 76, 48, 28, 9
+4160  EE C7 98 69 42 21 FE CA   .byte 238, 199, 152, 105, 66, 33, 254, 202, 120, 7, 130, 251, 134, 41, 221, 146
+4170  37 C5 44 C8 61 17 E0 A7   .byte 55, 197, 68, 200, 97, 23, 224, 167, 90, 240, 119, 7, 183, 141, 123, 99
+4180  2A C9 53 ED BC C8 FA 1C   .byte 42, 201, 83, 237, 188, 200, 250, 28, 250, 128, 211, 82, 74, 45, 1, 137
+4190  48 AC 47 F2 D4 4A BF 7B   .byte 72, 172, 71, 242, 212, 74, 191, 123, 144, 224, 51, 92, 74, 16, 213, 186
+41A0  CA F8 25 39 29 04 DF D1   .byte 202, 248, 37, 57, 41, 4, 223, 209, 223, 255, 30, 41, 27, 254, 228, 220
+41B0  EA 03 1A 20 13 FB E8 E3   .byte 234, 3, 26, 32, 19, 251, 232, 227, 240, 6, 23, 26, 13, 250, 234, 232
+41C0  F5 07 15 16 0A F8 EC EC   .byte 245, 7, 21, 22, 10, 248, 236, 236, 248, 8, 19, 19, 7, 247, 237, 239
+41D0  FB 09 12 10 04 F6 EE F1   .byte 251, 9, 18, 16, 4, 246, 238, 241, 253, 10, 17, 14, 2, 246, 239, 243
+41E0  FF 0B 10 0C 01 F5 F0 F5   .byte 255, 11, 16, 12, 1, 245, 240, 245, 0, 11, 16, 10, 255, 244, 241, 246
+41F0  02 0C 0F 09 FE F3 F1 F7   .byte 2, 12, 15, 9, 254, 243, 241, 247, 3, 14, 16, 8, 251, 240, 239, 251
+4200  00 00 00 00 00 00 00 00   .byte 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1
+4210  02 02 02 02 02 02 02 02   .byte 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3
+4220  03 03 03 03 03 03 03 04   .byte 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4
+4230  04 04 04 04 04 04 04 04   .byte 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4
+4240  04 04 03 03 03 03 03 03   .byte 4, 4, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 2
+4250  02 02 02 02 02 02 02 02   .byte 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1
+4260  00 00 00 00 00 00 FF FF   .byte 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 254, 253, 253, 253, 252, 252
+4270  FC FB FB FA FA FA F9 F9   .byte 252, 251, 251, 250, 250, 250, 249, 249, 249, 248, 248, 248, 247, 247, 247, 247
+4280  F7 F6 F6 F5 F5 F5 F5 F6   .byte 247, 246, 246, 245, 245, 245, 245, 246, 245, 245, 244, 244, 244, 245, 247, 249
+4290  FC FE 00 00 00 00 FF FF   .byte 252, 254, 0, 0, 0, 0, 255, 255, 255, 255, 0, 0, 0, 0, 255, 255
+42A0  FF FF 00 00 00 00 FF FF   .byte 255, 255, 0, 0, 0, 0, 255, 255, 255, 255, 0, 0, 0, 255, 255, 255
+42B0  FF 00 00 00 00 FF FF FF   .byte 255, 0, 0, 0, 0, 255, 255, 255, 255, 0, 0, 0, 0, 255, 255, 255
+42C0  FF 00 00 00 00 FF FF FF   .byte 255, 0, 0, 0, 0, 255, 255, 255, 255, 0, 0, 0, 0, 255, 255, 255
+42D0  FF 00 00 00 00 FF FF FF   .byte 255, 0, 0, 0, 0, 255, 255, 255, 255, 0, 0, 0, 0, 255, 255, 255
+42E0  FF 00 00 00 00 FF FF FF   .byte 255, 0, 0, 0, 0, 255, 255, 255, 0, 0, 0, 0, 255, 255, 255, 255
+42F0  00 00 00 00 FF FF FF FF   .byte 0, 0, 0, 0, 255, 255, 255, 255, 0, 0, 0, 0, 255, 255, 255, 255
+4300  0E 19 2F 50 7B AB DA 04   .byte 14, 25, 47, 80, 123, 171, 218, 4, 38, 64, 86, 106, 130, 160, 197, 239
+4310  19 41 62 7B 8E 9D AF C5   .byte 25, 65, 98, 123, 142, 157, 175, 197, 225, 3, 39, 73, 102, 123, 137, 146
+4320  9A A6 B7 CE E9 04 1B 2A   .byte 154, 166, 183, 206, 233, 4, 27, 42, 49, 50, 48, 47, 51, 62, 78, 95
+4330  6E 76 76 6E 61 54 4A 47   .byte 110, 118, 118, 110, 97, 84, 74, 71, 74, 81, 87, 88, 81, 65, 42, 17
+4340  FA E9 DF DB D9 D4 C6 B0   .byte 250, 233, 223, 219, 217, 212, 198, 176, 144, 108, 73, 43, 22, 8, 255, 244
+4350  E3 C8 A3 77 49 20 00 EA   .byte 227, 200, 163, 119, 73, 32, 0, 234, 220, 207, 189, 161, 121, 71, 17, 223
+4360  B7 9D 8F 85 74 53 19 C4   .byte 183, 157, 143, 133, 116, 83, 25, 196, 89, 224, 101, 242, 140, 52, 229, 148
+4370  3A D1 5A DC 62 F6 9F 5E   .byte 58, 209, 90, 220, 98, 246, 159, 94, 44, 253, 196, 120, 21, 162, 46, 202
+4380  85 66 67 79 81 6A 24 AF   .byte 133, 102, 103, 121, 129, 106, 36, 175, 31, 152, 75, 93, 247, 32, 199, 195
+4390  D8 C7 57 66 EA F4 A9 37   .byte 216, 199, 87, 102, 234, 244, 169, 55, 204, 135, 119, 152, 214, 26, 76, 94
+43A0  4E 26 F5 CC B9 C0 DC 02   .byte 78, 38, 245, 204, 185, 192, 220, 2, 36, 56, 55, 35, 5, 231, 211, 208
+43B0  DE F6 11 24 2A 21 0D F6   .byte 222, 246, 17, 36, 42, 33, 13, 246, 227, 219, 224, 240, 5, 23, 33, 31
+43C0  12 00 EE E3 E3 EC FC 0D   .byte 18, 0, 238, 227, 227, 236, 252, 13, 25, 28, 21, 7, 247, 235, 230, 234
+43D0  F6 05 12 18 16 0C FE F1   .byte 246, 5, 18, 24, 22, 12, 254, 241, 234, 234, 242, 255, 12, 20, 21, 15
+43E0  04 F7 EE EB F0 FA 06 10   .byte 4, 247, 238, 235, 240, 250, 6, 16, 20, 17, 8, 253, 243, 238, 239, 246
+43F0  00 0B 11 11 0B 02 F8 F2   .byte 0, 11, 17, 17, 11, 2, 248, 242, 240, 244, 251, 4, 10, 13, 12, 11
+4400  00 00 00 00 00 00 00 01   .byte 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1
+4410  02 02 02 02 02 02 02 02   .byte 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3
+4420  03 03 03 03 03 04 04 04   .byte 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4
+4430  04 04 04 04 04 04 04 04   .byte 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4
+4440  03 03 03 03 03 03 03 03   .byte 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 2
+4450  02 02 02 02 02 02 02 01   .byte 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 0
+4460  00 00 00 00 00 00 00 FF   .byte 0, 0, 0, 0, 0, 0, 0, 255, 255, 254, 254, 253, 253, 253, 252, 252
+4470  FC FB FB FA FA F9 F9 F9   .byte 252, 251, 251, 250, 250, 249, 249, 249, 249, 248, 248, 248, 248, 247, 247, 246
+4480  F6 F6 F6 F6 F6 F6 F6 F5   .byte 246, 246, 246, 246, 246, 246, 246, 245, 245, 244, 244, 244, 244, 246, 247, 249
+4490  FB FD FF 00 00 00 00 00   .byte 251, 253, 255, 0, 0, 0, 0, 0, 255, 255, 255, 255, 255, 0, 0, 0
+44A0  00 00 FF FF FF FF FF 00   .byte 0, 0, 255, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 255, 255, 255
+44B0  FF FF 00 00 00 00 00 FF   .byte 255, 255, 0, 0, 0, 0, 0, 255, 255, 255, 255, 255, 0, 0, 0, 0
+44C0  00 00 FF FF FF FF FF 00   .byte 0, 0, 255, 255, 255, 255, 255, 0, 0, 0, 0, 0, 255, 255, 255, 255
+44D0  FF 00 00 00 00 00 FF FF   .byte 255, 0, 0, 0, 0, 0, 255, 255, 255, 255, 255, 255, 0, 0, 0, 0
+44E0  00 FF FF FF FF FF 00 00   .byte 0, 255, 255, 255, 255, 255, 0, 0, 0, 0, 0, 255, 255, 255, 255, 255
+44F0  00 00 00 00 00 00 FF FF   .byte 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 255, 0, 0, 0, 0, 0
+4500  1C 3C 5E 80 A1 C0 DC F7   .byte 28, 60, 94, 128, 161, 192, 220, 247, 16, 42, 69, 99, 132, 169, 208, 249
+4510  23 4B 70 91 AD C4 D8 E9   .byte 35, 75, 112, 145, 173, 196, 216, 233, 248, 9, 27, 48, 74, 102, 133, 165
+4520  C4 E0 F9 0B 19 21 25 27   .byte 196, 224, 249, 11, 25, 33, 37, 39, 40, 42, 47, 56, 68, 84, 101, 118
+4530  86 92 98 98 92 87 78 68   .byte 134, 146, 152, 152, 146, 135, 120, 104, 87, 73, 63, 57, 55, 56, 59, 61
+4540  3C 36 2A 17 FD DE BC 9A   .byte 60, 54, 42, 23, 253, 222, 188, 154, 121, 92, 69, 51, 38, 28, 20, 10
+4550  FC E8 CB A7 7C 4C 1A E9   .byte 252, 232, 203, 167, 124, 76, 26, 233, 187, 149, 118, 96, 80, 70, 61, 49
+4560  1F 03 DB A6 64 17 C2 68   .byte 31, 3, 219, 166, 100, 23, 194, 104, 11, 175, 85, 254, 169, 84, 253, 161
+4570  3E D2 5D E3 64 E7 70 04   .byte 62, 210, 93, 227, 100, 231, 112, 4, 167, 92, 33, 247, 215, 187, 157, 116
+4580  3B EE 8D 1B A0 26 BA 6B   .byte 59, 238, 141, 27, 160, 38, 186, 107, 75, 92, 177, 74, 37, 59, 128, 226
+4590  4E B0 F4 0B E8 86 E3 05   .byte 78, 176, 244, 11, 232, 134, 227, 5, 245, 192, 118, 37, 217, 158, 122, 112
+45A0  7E 9E CB FC 29 4C 60 63   .byte 126, 158, 203, 252, 41, 76, 96, 99, 86, 60, 27, 248, 216, 192, 180, 181
+45B0  C2 D7 F2 0E 27 37 3F 3C   .byte 194, 215, 242, 14, 39, 55, 63, 60, 47, 28, 5, 238, 219, 206, 202, 207
+45C0  DB ED 01 15 24 2E 2F 2A   .byte 219, 237, 1, 21, 36, 46, 47, 42, 29, 13, 250, 233, 221, 214, 214, 221
+45D0  E9 F9 09 18 23 28 26 1E   .byte 233, 249, 9, 24, 35, 40, 38, 30, 18, 3, 243, 230, 222, 218, 221, 230
+45E0  F3 01 0F 1B 22 24 20 16   .byte 243, 1, 15, 27, 34, 36, 32, 22, 9, 251, 238, 227, 221, 221, 227, 237
+45F0  FB 09 16 1F 24 22 1B 0F   .byte 251, 9, 22, 31, 36, 34, 27, 15, 0, 241, 228, 219, 217, 222, 236, 1
+4600  00 00 00 00 00 00 00 00   .byte 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1
+4610  02 02 02 02 02 02 02 02   .byte 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3
+4620  03 03 03 04 04 04 04 04   .byte 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4
+4630  04 04 04 04 04 04 04 04   .byte 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4
+4640  04 04 04 04 03 03 03 03   .byte 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3
+4650  02 02 02 02 02 02 02 01   .byte 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1
+4660  01 01 00 00 00 00 FF FF   .byte 1, 1, 0, 0, 0, 0, 255, 255, 255, 254, 254, 253, 253, 253, 252, 252
+4670  FC FB FB FA FA F9 F9 F9   .byte 252, 251, 251, 250, 250, 249, 249, 249, 248, 248, 248, 247, 247, 247, 247, 247
+4680  F7 F6 F6 F6 F5 F5 F4 F4   .byte 247, 246, 246, 246, 245, 245, 244, 244, 244, 244, 244, 245, 246, 247, 248, 249
+4690  FB FC FD FF FF 00 00 01   .byte 251, 252, 253, 255, 255, 0, 0, 1, 0, 0, 0, 0, 255, 255, 255, 255
+46A0  FF FF FF FF 00 00 00 00   .byte 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 255
+46B0  FF FF FF 00 00 00 00 00   .byte 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 255
+46C0  FF FF 00 00 00 00 00 00   .byte 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 255, 255
+46D0  FF FF 00 00 00 00 00 00   .byte 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 255, 255
+46E0  FF 00 00 00 00 00 00 00   .byte 255, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 255, 255, 255
+46F0  FF 00 00 00 00 00 00 00   .byte 255, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 255, 255, 0
+4700  00 B2 64 15 C5 74 20 CA   .byte 0, 178, 100, 21, 197, 116, 32, 202, 114, 22, 183, 83, 236, 128, 16, 154
+4710  1E 9D 15 87 F2 56 B3 08   .byte 30, 157, 21, 135, 242, 86, 179, 8, 85, 154, 215, 12, 55, 90, 115, 131
+4720  8A 87 7A 64 43 19 E4 A5   .byte 138, 135, 122, 100, 67, 25, 228, 165, 92, 8, 170, 66, 207, 81, 201, 55
+4730  9A F2 40 84 BD EB 10 2A   .byte 154, 242, 64, 132, 189, 235, 16, 42, 58, 64, 60, 46, 22, 245, 201, 148
+4740  56 0E BE 63 00 94 20 A2   .byte 86, 14, 190, 99, 0, 148, 32, 162, 28, 142, 248, 89, 178, 4, 77, 143
+4750  CA FD 29 4E 6C 83 93 9D   .byte 202, 253, 41, 78, 108, 131, 147, 157, 160, 157, 148, 133, 112, 85, 52, 14
+4760  E2 B1 7B 3F FF B9 6F 21   .byte 226, 177, 123, 63, 255, 185, 111, 33, 205, 118, 25, 185, 85, 236, 127, 15
+4770  9B 23 A8 29 A6 20 98 0B   .byte 155, 35, 168, 41, 166, 32, 152, 11, 124, 234, 85, 189, 34, 132, 228, 65
+4780  9C F4 4A 9D EE 3D 8A D5   .byte 156, 244, 74, 157, 238, 61, 138, 213, 29, 100, 169, 236, 45, 108, 170, 229
+4790  20 58 8F C5 F8 2B 5C 8C   .byte 32, 88, 143, 197, 248, 43, 92, 140, 186, 232, 19, 62, 104, 144, 183, 221
+47A0  02 26 49 6C 8D AD CC EA   .byte 2, 38, 73, 108, 141, 173, 204, 234, 8, 37, 65, 92, 118, 144, 169, 193
+47B0  D8 EF 05 1B 30 44 58 6B   .byte 216, 239, 5, 27, 48, 68, 88, 107, 126, 144, 162, 179, 196, 212, 228, 243
+47C0  02 10 1F 2C 39 46 53 5F   .byte 2, 16, 31, 44, 57, 70, 83, 95, 107, 118, 130, 140, 151, 161, 171, 181
+47D0  BE C7 D0 D9 E1 E9 F1 F9   .byte 190, 199, 208, 217, 225, 233, 241, 249, 0, 8, 15, 22, 28, 35, 41, 47
+47E0  35 3B 40 46 4B 50 55 5A   .byte 53, 59, 64, 70, 75, 80, 85, 90, 95, 100, 104, 108, 112, 117, 121, 124
+47F0  80 84 87 8B 8E 91 94 98   .byte 128, 132, 135, 139, 142, 145, 148, 152, 154, 157, 160, 163, 166, 168, 171, 173
+4800  00 03 07 0B 0E 12 16 19   .byte 0, 3, 7, 11, 14, 18, 22, 25, 29, 33, 36, 40, 43, 47, 51, 54
+4810  3A 3D 41 44 47 4B 4E 52   .byte 58, 61, 65, 68, 71, 75, 78, 82, 85, 88, 91, 95, 98, 101, 104, 107
+4820  6E 71 74 77 7A 7D 7F 82   .byte 110, 113, 116, 119, 122, 125, 127, 130, 133, 136, 138, 141, 143, 146, 148, 151
+4830  99 9B 9E A0 A2 A4 A7 A9   .byte 153, 155, 158, 160, 162, 164, 167, 169, 171, 173, 175, 177, 179, 180, 182, 184
+4840  BA BC BD BF C1 C2 C4 C5   .byte 186, 188, 189, 191, 193, 194, 196, 197, 199, 200, 201, 203, 204, 206, 207, 208
+4850  D1 D2 D4 D5 D6 D7 D8 D9   .byte 209, 210, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225
+4860  E1 E2 E3 E4 E4 E5 E6 E7   .byte 225, 226, 227, 228, 228, 229, 230, 231, 231, 232, 233, 233, 234, 234, 235, 236
+4870  EC ED ED EE EE EF EF F0   .byte 236, 237, 237, 238, 238, 239, 239, 240, 240, 240, 241, 241, 242, 242, 242, 243
+4880  F3 F3 F4 F4 F4 F5 F5 F5   .byte 243, 243, 244, 244, 244, 245, 245, 245, 246, 246, 246, 246, 247, 247, 247, 247
+4890  F8 F8 F8 F8 F8 F9 F9 F9   .byte 248, 248, 248, 248, 248, 249, 249, 249, 249, 249, 250, 250, 250, 250, 250, 250
+48A0  FB FB FB FB FB FB FB FB   .byte 251, 251, 251, 251, 251, 251, 251, 251, 252, 252, 252, 252, 252, 252, 252, 252
+48B0  FC FC FD FD FD FD FD FD   .byte 252, 252, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253, 253
+48C0  FE FE FE FE FE FE FE FE   .byte 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254, 254
+48D0  FE FE FE FE FE FE FE FE   .byte 254, 254, 254, 254, 254, 254, 254, 254, 255, 255, 255, 255, 255, 255, 255, 255
+48E0  FF FF FF FF FF FF FF FF   .byte 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255
+48F0  FF FF FF FF FF FF FF FF   .byte 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255
+4900  00 0F 1E 2C 3B 4A 59 68   .byte 0, 15, 30, 44, 59, 74, 89, 104, 118, 133, 148, 163, 178, 193, 207, 222
+4910  ED FC 0B 1A 28 37 46 55   .byte 237, 252, 11, 26, 40, 55, 70, 85, 100, 115, 130, 144, 159, 174, 189, 204
+4920  DB EA F9 08 17 25 34 43   .byte 219, 234, 249, 8, 23, 37, 52, 67, 82, 97, 112, 127, 142, 157, 172, 187
+4930  CA D9 E8 F6 05 14 23 32   .byte 202, 217, 232, 246, 5, 20, 35, 50, 65, 80, 95, 110, 125, 140, 155, 170
+4940  B9 C8 D7 E6 F5 04 13 22   .byte 185, 200, 215, 230, 245, 4, 19, 34, 49, 64, 79, 94, 110, 125, 140, 155
+4950  AA B9 C8 D7 E6 F5 04 13   .byte 170, 185, 200, 215, 230, 245, 4, 19, 34, 49, 64, 80, 95, 110, 125, 140
+4960  9B AA B9 C8 D8 E7 F6 05   .byte 155, 170, 185, 200, 216, 231, 246, 5, 20, 35, 50, 65, 81, 96, 111, 126
+4970  8D 9C AC BB CA D9 E8 F8   .byte 141, 156, 172, 187, 202, 217, 232, 248, 7, 22, 37, 52, 67, 83, 98, 113
+4980  80 90 9F AE BD CC DC EB   .byte 128, 144, 159, 174, 189, 204, 220, 235, 250, 9, 25, 40, 55, 71, 86, 101
+4990  74 84 93 A2 B1 C1 D0 DF   .byte 116, 132, 147, 162, 177, 193, 208, 223, 239, 254, 13, 29, 44, 59, 75, 90
+49A0  69 79 88 97 A7 B6 C5 D5   .byte 105, 121, 136, 151, 167, 182, 197, 213, 228, 243, 3, 18, 33, 49, 64, 80
+49B0  5F 6E 7E 8D 9C AC BB CB   .byte 95, 110, 126, 141, 156, 172, 187, 203, 218, 234, 249, 8, 24, 39, 55, 70
+49C0  56 65 74 84 93 A3 B2 C2   .byte 86, 101, 116, 132, 147, 163, 178, 194, 209, 225, 240, 0, 15, 31, 46, 62
+49D0  4D 5D 6C 7C 8B 9B AA BA   .byte 77, 93, 108, 124, 139, 155, 170, 186, 201, 217, 232, 248, 7, 23, 38, 54
+49E0  45 55 65 74 84 93 A3 B2   .byte 69, 85, 101, 116, 132, 147, 163, 178, 194, 210, 225, 241, 0, 16, 32, 47
+49F0  3F 4E 5E 6E 7D 8D 9C AC   .byte 63, 78, 94, 110, 125, 141, 156, 172, 188, 203, 219, 235, 250, 10, 26, 41
+4A00  00 00 00 00 00 00 00 00   .byte 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+4A10  00 00 01 01 01 01 01 01   .byte 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+4A20  01 01 01 02 02 02 02 02   .byte 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
+4A30  02 02 02 02 03 03 03 03   .byte 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3
+4A40  03 03 03 03 03 04 04 04   .byte 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4
+4A50  04 04 04 04 04 04 05 05   .byte 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5
+4A60  05 05 05 05 05 05 05 06   .byte 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6
+4A70  06 06 06 06 06 06 06 06   .byte 6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7
+4A80  07 07 07 07 07 07 07 07   .byte 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8
+4A90  08 08 08 08 08 08 08 08   .byte 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 9, 9, 9, 9, 9, 9
+4AA0  09 09 09 09 09 09 09 09   .byte 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 10, 10, 10, 10, 10, 10
+4AB0  0A 0A 0A 0A 0A 0A 0A 0A   .byte 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 11, 11, 11, 11, 11
+4AC0  0B 0B 0B 0B 0B 0B 0B 0B   .byte 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 12, 12, 12, 12, 12
+4AD0  0C 0C 0C 0C 0C 0C 0C 0C   .byte 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 13, 13, 13, 13
+4AE0  0D 0D 0D 0D 0D 0D 0D 0D   .byte 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 14, 14, 14, 14
+4AF0  0E 0E 0E 0E 0E 0E 0E 0E   .byte 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 15, 15, 15
+4B00  00 03 06 09 0C 10 13 16   .byte 0, 3, 6, 9, 12, 16, 19, 22, 25, 28, 31, 34, 37, 40, 43, 46
+4B10  31 33 36 39 3C 3F 41 44   .byte 49, 51, 54, 57, 60, 63, 65, 68, 71, 73, 76, 78, 81, 83, 85, 88
+4B20  5A 5C 5E 60 62 64 66 68   .byte 90, 92, 94, 96, 98, 100, 102, 104, 106, 107, 109, 111, 112, 113, 115, 116
+4B30  75 76 78 79 7A 7A 7B 7C   .byte 117, 118, 120, 121, 122, 122, 123, 124, 125, 125, 126, 126, 126, 127, 127, 127
+4B40  7F 7F 7F 7F 7E 7E 7E 7D   .byte 127, 127, 127, 127, 126, 126, 126, 125, 125, 124, 123, 122, 122, 121, 120, 118
+4B50  75 74 73 71 70 6F 6D 6B   .byte 117, 116, 115, 113, 112, 111, 109, 107, 106, 104, 102, 100, 98, 96, 94, 92
+4B60  5A 58 55 53 51 4E 4C 49   .byte 90, 88, 85, 83, 81, 78, 76, 73, 71, 68, 65, 63, 60, 57, 54, 51
+4B70  31 2E 2B 28 25 22 1F 1C   .byte 49, 46, 43, 40, 37, 34, 31, 28, 25, 22, 19, 16, 12, 9, 6, 3
+4B80  00 FD FA F7 F4 F0 ED EA   .byte 0, 253, 250, 247, 244, 240, 237, 234, 231, 228, 225, 222, 219, 216, 213, 210
+4B90  CF CD CA C7 C4 C1 BF BC   .byte 207, 205, 202, 199, 196, 193, 191, 188, 185, 183, 180, 178, 175, 173, 171, 168
+4BA0  A6 A4 A2 A0 9E 9C 9A 98   .byte 166, 164, 162, 160, 158, 156, 154, 152, 150, 149, 147, 145, 144, 143, 141, 140
+4BB0  8B 8A 88 87 86 86 85 84   .byte 139, 138, 136, 135, 134, 134, 133, 132, 131, 131, 130, 130, 130, 129, 129, 129
+4BC0  81 81 81 81 82 82 82 83   .byte 129, 129, 129, 129, 130, 130, 130, 131, 131, 132, 133, 134, 134, 135, 136, 138
+4BD0  8B 8C 8D 8F 90 91 93 95   .byte 139, 140, 141, 143, 144, 145, 147, 149, 150, 152, 154, 156, 158, 160, 162, 164
+4BE0  A6 A8 AB AD AF B2 B4 B7   .byte 166, 168, 171, 173, 175, 178, 180, 183, 185, 188, 191, 193, 196, 199, 202, 205
+4BF0  CF D2 D5 D8 DB DE E1 E4   .byte 207, 210, 213, 216, 219, 222, 225, 228, 231, 234, 237, 240, 244, 247, 250, 253
+4C00  96 C6 26 BA 84 88 C9 4A   .byte 150, 198, 38, 186, 132, 136, 201, 74, 17, 32, 123, 41, 45, 140, 77, 116
+4C10  08 10 92 95 21 3F F7 52   .byte 8, 16, 146, 149, 33, 63, 247, 82, 90, 25, 154, 232, 17, 32, 35, 42
+4C20  43 7E EE A4 B4 31 33 D1   .byte 67, 126, 238, 164, 180, 49, 51, 209, 33, 63, 70, 84, 133, 253, 220, 72
+4C30  67 63 67 A1 43 7F 8D A7   .byte 103, 99, 103, 161, 67, 127, 141, 167, 11, 249, 184, 144, 206, 198, 206, 66
+4C40  85 FE 1A 4E 16 F3 70 1F   .byte 133, 254, 26, 78, 22, 243, 112, 31, 156, 140, 156, 133, 10, 251, 52, 156
+4C50  2B E5 DF 3E 39 18 37 09   .byte 43, 229, 223, 62, 57, 24, 55, 9, 20, 247, 104, 57, 86, 202, 191, 125
+4C60  72 30 6F 12 28 ED CF 71   .byte 114, 48, 111, 18, 40, 237, 207, 113, 172, 149, 125, 250, 228, 95, 222, 37
+4C70  50 DA 9F E3 59 2A FB F3   .byte 80, 218, 159, 227, 89, 42, 251, 243, 199, 190, 188, 74, 255, 255, 255, 255
+4C80  35 38 3C 3F 43 47 4B 50   .byte 53, 56, 60, 63, 67, 71, 75, 80, 85, 90, 95, 101, 107, 113, 120, 127
+4C90  87 8F 97 A0 AA B4 BE CA   .byte 135, 143, 151, 160, 170, 180, 190, 202, 214, 227, 240, 254, 14, 30, 47, 65
+4CA0  54 68 7D 94 AC C6 E1 FD   .byte 84, 104, 125, 148, 172, 198, 225, 253, 28, 60, 94, 130, 168, 208, 251, 41
+4CB0  59 8C C2 FB 38 78 BC 04   .byte 89, 140, 194, 251, 56, 120, 188, 4, 81, 161, 247, 82, 178, 24, 132, 247
+4CC0  70 F0 79 09 A2 43 EF A5   .byte 112, 240, 121, 9, 162, 67, 239, 165, 101, 49, 9, 238, 225, 225, 242, 18
+4CD0  44 87 DE 4A CB 63 13 DD   .byte 68, 135, 222, 74, 203, 99, 19, 221, 194, 195, 228, 37, 136, 15, 189, 148
+4CE0  96 C6 26 BA 84 87 C8 4A   .byte 150, 198, 38, 186, 132, 135, 200, 74, 16, 31, 123, 40, 44, 140, 76, 116
+4CF0  08 0F 91 94 21 3F F6 51   .byte 8, 15, 145, 148, 33, 63, 246, 81, 89, 24, 153, 232, 255, 255, 255, 255
+4D00  00 00 00 00 00 00 00 00   .byte 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+4D10  00 00 00 00 00 00 00 00   .byte 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1
+4D20  01 01 01 01 01 01 01 01   .byte 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3
+4D30  03 03 03 03 04 04 04 05   .byte 3, 3, 3, 3, 4, 4, 4, 5, 5, 5, 5, 6, 6, 7, 7, 7
+4D40  08 08 09 0A 0A 0B 0B 0C   .byte 8, 8, 9, 10, 10, 11, 11, 12, 13, 14, 15, 15, 16, 17, 18, 20
+4D50  15 16 17 19 1A 1C 1E 1F   .byte 21, 22, 23, 25, 26, 28, 30, 31, 33, 35, 37, 40, 42, 45, 47, 50
+4D60  35 38 3C 3F 43 47 4B 50   .byte 53, 56, 60, 63, 67, 71, 75, 80, 85, 90, 95, 101, 107, 113, 120, 127
+4D70  87 8F 97 A0 AA B4 BE CA   .byte 135, 143, 151, 160, 170, 180, 190, 202, 214, 227, 240, 254, 255, 255, 255, 255
+4D80  00 00 00 00 00 00 00 00   .byte 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+4D90  00 00 00 00 00 00 00 00   .byte 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+4DA0  00 00 00 00 00 00 00 00   .byte 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+4DB0  00 00 00 00 01 01 01 01   .byte 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2
+4DC0  02 02 02 02 02 02 02 02   .byte 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
+4DD0  02 02 02 02 02 02 02 02   .byte 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
+4DE0  02 02 02 02 02 02 02 02   .byte 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
+4DF0  02 02 02 02 02 02 02 02   .byte 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
+4E00  8B 94 9C A6 B0 BA C5 D1   .byte 139, 148, 156, 166, 176, 186, 197, 209, 221, 234, 248, 7, 23, 39, 57, 75
+4E10  5F 74 8A A2 BA D5 F1 0E   .byte 95, 116, 138, 162, 186, 213, 241, 14, 45, 79, 114, 151, 190, 232, 20, 67
+4E20  75 A9 E1 1C 5B 9D E3 2E   .byte 117, 169, 225, 28, 91, 157, 227, 46, 125, 208, 41, 134, 234, 83, 194, 56
+4E30  B6 3A C7 5B F9 A0 51 0C   .byte 182, 58, 199, 91, 249, 160, 81, 12, 211, 166, 133, 113, 107, 116, 141, 183
+4E40  F2 40 A2 19 A6 4B 09 E2   .byte 242, 64, 162, 25, 166, 75, 9, 226, 214, 232, 26, 109, 228, 128, 68, 50
+4E50  4D 96 12 C3 AC D1 34 DB   .byte 77, 150, 18, 195, 172, 209, 52, 219, 200, 0, 136, 100, 153, 45, 36, 134
+4E80  00 00 00 00 00 00 00 00   .byte 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1
+4E90  01 01 01 01 01 01 01 02   .byte 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3
+4EA0  03 03 03 04 04 04 04 05   .byte 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 8
+4EB0  08 09 09 0A 0A 0B 0C 0D   .byte 8, 9, 9, 10, 10, 11, 12, 13, 13, 14, 15, 16, 17, 18, 19, 20
+4EC0  15 17 18 1A 1B 1D 1F 20   .byte 21, 23, 24, 26, 27, 29, 31, 32, 34, 36, 39, 41, 43, 46, 49, 52
+4ED0  37 3A 3E 41 45 49 4E 52   .byte 55, 58, 62, 65, 69, 73, 78, 82, 87, 93, 98, 104, 110, 117, 124, 131
+4F00  86 8E 97 9F A9 B3 BE C9   .byte 134, 142, 151, 159, 169, 179, 190, 201, 213, 226, 239, 253, 12, 28, 45, 63
+4F10  52 66 7B 92 AA C3 DE FA   .byte 82, 102, 123, 146, 170, 195, 222, 250, 24, 56, 90, 126, 164, 204, 247, 36
+4F20  54 86 BC F5 31 71 B4 FC   .byte 84, 134, 188, 245, 49, 113, 180, 252, 72, 152, 237, 72, 167, 12, 120, 233
+4F30  62 E2 69 F8 90 30 DB 8F   .byte 98, 226, 105, 248, 144, 48, 219, 143, 78, 25, 240, 211, 196, 195, 209, 240
+4F40  1F 61 B6 1E 9D 32 DF A6   .byte 31, 97, 182, 30, 157, 50, 223, 166, 136, 134, 163, 224, 63, 194, 107, 61
+4F50  3A 64 BE 4C 0F 0C 46 BF   .byte 58, 100, 190, 76, 15, 12, 70, 191, 125, 132, 214, 122, 115, 200, 125, 151
+4F80  00 00 00 00 00 00 00 00   .byte 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1
+4F90  01 01 01 01 01 01 01 01   .byte 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3
+4FA0  03 03 03 03 04 04 04 04   .byte 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 6, 6, 7, 7, 7
+4FB0  08 08 09 09 0A 0B 0B 0C   .byte 8, 8, 9, 9, 10, 11, 11, 12, 13, 14, 14, 15, 16, 17, 18, 19
+4FC0  15 16 17 19 1A 1C 1D 1F   .byte 21, 22, 23, 25, 26, 28, 29, 31, 33, 35, 37, 39, 42, 44, 47, 50
+4FD0  35 38 3B 3F 43 47 4B 4F   .byte 53, 56, 59, 63, 67, 71, 75, 79, 84, 89, 94, 100, 106, 112, 119, 126
+4FFF  00                        .byte 0
