@@ -69,3 +69,5 @@ JASA 24 (1952); the glottal pulse after A. E. Rosenberg, JASA 49 (1971). All sou
 `docs/CREDITS.txt`, also on the disk.
 
 MIT licence: free to use, change and share, with the notice. See [LICENSE](LICENSE).
+
+Libraries and archives may copy and keep these files, including for legal deposit.
